@@ -8,15 +8,16 @@ export default class TopView extends JetView {
 
 		let menu = {
 			view: "menu",
-			id: "top:menu",
+			localId: "top:menu",
 			css: "app_menu",
 			width: 180,
 			layout: "y",
 			select: true,
 			template: "<span class='webix_icon #icon#'></span> #value# ",
 			data: [
-				{value: "Dashboard", id: "start", icon: "wxi-columns"},
-				{value: "Data", id: "data", icon: "wxi-pencil"}
+				{value: "Contacts", id: "contacts", icon: "mdi mdi-account"},
+				{value: "Activities", id: "activities", icon: "wxi-calendar"},
+				{value: "Settings", id: "settings", icon: "mdi mdi-cogs"}
 			]
 		};
 

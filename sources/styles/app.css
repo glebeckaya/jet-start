@@ -56,3 +56,52 @@
 	font-size:20px;
 	vertical-align:middle;
 }
+
+.contacts-list .webix_list_item p {
+	line-height: normal;
+	margin: 8px;
+}
+.contacts-list .webix_list_item p:first-child {
+	font-weight: bold;
+	font-size: 18px;
+}
+.contacts-list .webix_list_item {
+    display: flex;
+    /* justify-content: space-between; */
+}
+.contacts-list .webix_icon.wxi-user {
+    display: flex;
+    align-items: center;
+}
+
+
+.custom-row {
+	display: flex;
+	justify-content: space-between;
+	margin: 10px 10px 30px;
+}
+.custom-row.custom-row__header {
+	font-size: 30px;
+}
+
+.custom-row > div {
+	display: flex;
+}
+.custom-row.custom-row__main {
+	justify-content: flex-start;
+}
+.custom-row.custom-row__main > div {
+	flex-direction: column;
+	margin-right: 100px;
+}
+.custom-row .webix_button.custom-button {
+	width: 100px;
+	height: 32px;
+	display: inline-block;
+	margin: 0 8px;
+}
+.custom-row .photo {
+	width: 150px;
+	height: 150px;
+	border: 1px solid #475466;
+}

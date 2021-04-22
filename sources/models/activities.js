@@ -3,10 +3,16 @@ const activities = new webix.DataCollection({
 	save: "rest->http://localhost:8096/api/v1/activities/",
 	scheme: {
 		$init: (obj) => {
-			let parserDate = webix.Date.strToDate("%Y-%M-%d");
+			let parserDate = webix.Date.strToDate("%Y-%m-%d");
 			let parserTime = webix.Date.strToDate("%H:%i");
 			obj.date = parserDate(obj.DueDate);
 			obj.time = parserTime(obj.DueDate);
+		},
+		$update: (obj) => {
+			let parserDate = webix.Date.strToDate("%Y-%m-%d");
+			let parserTime = webix.Date.strToDate("%H:%i");
+			obj.date = parserDate(obj.date);
+			obj.time = parserTime(obj.time);
 		}
 	}
 });

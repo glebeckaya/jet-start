@@ -5,38 +5,77 @@ import statuses from "../models/statuses";
 
 export default class ContactsInfoView extends JetView {
 	config() {
+		const contactsTemplate = {
+			localId: "temp",
+			type: "clean",
+			template: `<div class=' webix_template'>
+				<div class='custom-row custom-row__header'>#value#</div>
+				<div class='custom-row custom-row__main'>
+					<div><div class='photo'></div><p>Status: #status#</p></div>
+					<div>
+						<p><i class="fas fa-envelope"></i> Email: #Email#</p>
+						<p><i class="fab fa-skype"></i> Skype: #Skype#</p>
+						<p><i class="fas fa-clipboard-list"></i> Job: #Job#</p>
+						<p><i class="fas fa-briefcase"></i> Company: #Company#</p>
+					</div>
+					<div>
+						<p><i class="far fa-calendar-alt"></i> Birthday: #Birthday#</p>
+						<p><i class="fas fa-street-view"></i> Location: #Address#</p>
+					</div>
+				</div>
+			</div>`
+		};
+
+		const contactsButtons = {
+			rows: [
+				{
+					padding: 10,
+					cols: [
+						{
+							view: "button",
+							css: "webix_primary",
+							type: "icon",
+							label: "Delete",
+							icon: "far fa-trash-alt",
+							width: 150
+						},
+						{
+							view: "button",
+							css: "webix_primary",
+							type: "icon",
+							label: "Edit",
+							icon: "far fa-edit",
+							width: 150
+						}
+					]
+				},
+				{}
+			]
+		};
+
 		return {
-			view: "template",
-			localId: "temp"
+			rows: [
+				{
+					cols: [
+						contactsTemplate,
+						contactsButtons
+					]
+				},
+				{}
+			]
 		};
 	}
 
 	urlChange() {
-		contacts.waitData.then(() => {
+		webix.promise.all([
+			contacts.waitData,
+			statuses.waitData
+		]).then(() => {
 			const id = this.getParam("id", true);
 			if (contacts.exists(id)) {
 				const user = contacts.getItem(id);
-				this.$$("temp").$view.innerHTML = `<div class=' webix_template'>
-					<div class='custom-row custom-row__header'>${user.value}
-						<div>
-							<button type="button" class="webix_button custom-button"><i class="far fa-trash-alt"></i> Delete</button>
-							<button type="button" class="webix_button custom-button"><i class="far fa-edit"></i> Edit</button>
-						</div>
-					</div>
-					<div class='custom-row custom-row__main'>
-						<div><div class='photo'></div><p>Status: ${statuses.getItem(user.StatusID).Value}</p></div>
-						<div>
-							<p><i class="fas fa-envelope"></i> Email: ${user.Email}</p>
-							<p><i class="fab fa-skype"></i> Skype: ${user.Skype}</p>
-							<p><i class="fas fa-clipboard-list"></i> Job: ${user.Job}</p>
-							<p><i class="fas fa-briefcase"></i> Company: ${user.Company}</p>
-						</div>
-						<div>
-							<p><i class="far fa-calendar-alt"></i> Birthday: ${user.Birthday}</p>
-							<p><i class="fas fa-street-view"></i> Location: ${user.Address}</p>
-						</div>
-					</div>
-				</div>`;
+				user.status = statuses.getItem(user.StatusID).Value;
+				this.$$("temp").parse(user);
 			}
 		});
 	}

@@ -49,6 +49,7 @@ export default class PopupView extends JetView {
 								type: "date",
 								label: "Date",
 								name: "date",
+								format: webix.Date.dateToStr("%d %M %Y"),
 								stringResult: true,
 								invalidMessage: "This field is required",
 								bottomPadding: 15
@@ -113,8 +114,10 @@ export default class PopupView extends JetView {
 		}
 		const values = this.form.getValues();
 		values.DueDate = `${values.date.split(" ")[0]} ${values.time}`;
+
 		let parser = webix.Date.dateToStr("%Y-%m-%d %H:%i");
 		values.DueDate = parser(values.DueDate);
+
 		if (values.id) {
 			this.dataActivities.updateItem(values.id, values);
 			this.hideWindow();

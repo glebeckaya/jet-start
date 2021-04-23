@@ -75,10 +75,8 @@ export default class DataView extends JetView {
 
 	init() {
 		this.table = this.$$("tableActivity");
-		webix.promise.all([contacts.waitData, activities.waitData, activitytypes.waitData]).then(() => {
-			this.table.sync(activities);
-			this._jetPopup = this.ui(PopupView);
-		});
+		this.table.sync(activities);
+		this._jetPopup = this.ui(PopupView);
 	}
 
 	showConfirmMessage(id) {

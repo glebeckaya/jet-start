@@ -11,7 +11,6 @@ export default class PopupView extends JetView {
 			modal: true,
 			position: "center",
 			width: 800,
-			move: true,
 			head: {
 				cols: [
 					{localId: "headerWindow", template: "#headerWindow#", type: "header"},

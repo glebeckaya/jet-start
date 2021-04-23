@@ -4,6 +4,9 @@ import activities from "../../models/activities";
 import activitytypes from "../../models/activitytypes";
 import contacts from "../../models/contacts";
 
+const parserDate = webix.Date.dateToStr("%Y-%m-%d");
+const parserTime = webix.Date.dateToStr("%H:%i");
+
 export default class PopupView extends JetView {
 	config() {
 		return {
@@ -100,8 +103,10 @@ export default class PopupView extends JetView {
 	}
 
 	showWindow(title, buttonName, id) {
-		this.values = activities.getItem(id);
-		if (this.values) this.form.setValues(this.values);
+		if (id) {
+			this.values = activities.getItem(id);
+			this.form.setValues(this.values || {});
+		}
 		const headerWindow = `${title} activity`;
 		this.$$("headerWindow").setValues({headerWindow});
 		this.$$("buttonSave").setValue(buttonName);
@@ -120,10 +125,6 @@ export default class PopupView extends JetView {
 			return false;
 		}
 		const values = this.form.getValues();
-
-		let parserDate = webix.Date.dateToStr("%Y-%m-%d");
-		let parserTime = webix.Date.dateToStr("%H:%i");
-
 		values.date = parserDate(values.date);
 		values.time = parserTime(values.time);
 		values.DueDate = `${values.date} ${values.time}`;

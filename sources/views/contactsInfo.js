@@ -8,24 +8,22 @@ export default class ContactsInfoView extends JetView {
 		const contactsTemplate = {
 			localId: "contactsTemplate",
 			type: "clean",
-			template: (obj) => {
-				return `<div class=' webix_template'>
-					<div class='custom-row custom-row__header'>${obj.value || ""}</div>
-					<div class='custom-row custom-row__main'>
-						<div><div class='photo'><img src= ${obj.Photo || "./sources/imgs/user.png"} alt=""></div><p>Status: ${obj.status || ""}</p></div>
-						<div>
-							<p><span class="fas fa-envelope"></span> Email: ${obj.Email || ""}</p>
-							<p><span class="fab fa-skype"></span> Skype: ${obj.Skype || ""}</p>
-							<p><span class="fas fa-clipboard-list"></span> Job: ${obj.Job || ""}</p>
-							<p><span class="fas fa-briefcase"></span> Company: ${obj.Company || ""}</p>
-						</div>
-						<div>
-							<p><span class="far fa-calendar-alt"></span> Birthday: ${obj.Birthday || ""}</p>
-							<p><span class="fas fa-street-view"></span> Location: ${obj.Address || ""}</p>
-						</div>
+			template: obj => `<div class=' webix_template'>
+				<div class='custom-row custom-row__header'>${obj.value || ""}</div>
+				<div class='custom-row custom-row__main'>
+					<div><div class='photo'><img src= ${obj.Photo || "./sources/imgs/user.png"} alt=""></div><p>Status: ${obj.status || ""}</p></div>
+					<div>
+						<p><span class="fas fa-envelope"></span> Email: ${obj.Email || ""}</p>
+						<p><span class="fab fa-skype"></span> Skype: ${obj.Skype || ""}</p>
+						<p><span class="fas fa-clipboard-list"></span> Job: ${obj.Job || ""}</p>
+						<p><span class="fas fa-briefcase"></span> Company: ${obj.Company || ""}</p>
 					</div>
-				</div>`
-			}
+					<div>
+						<p><span class="far fa-calendar-alt"></span> Birthday: ${obj.Birthday || ""}</p>
+						<p><span class="fas fa-street-view"></span> Location: ${obj.Address || ""}</p>
+					</div>
+				</div>
+			</div>`
 		};
 
 		const contactsButtons = {

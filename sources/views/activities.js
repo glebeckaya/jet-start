@@ -37,9 +37,6 @@ export default class DataView extends JetView {
 							id: "TypeID",
 							header: ["Activity Type", {content: "selectFilter"}],
 							collection: activitytypes,
-							template(obj, common, val) {
-								return activitytypes.getItem(val).Value;
-							},
 							sort: "text"
 						},
 						{
@@ -54,9 +51,6 @@ export default class DataView extends JetView {
 							id: "ContactID",
 							header: ["Contact", {content: "selectFilter"}],
 							collection: contacts,
-							template(obj, common, val) {
-								return contacts.getItem(val).value;
-							},
 							sort: "string",
 							fillspace: true
 						},

@@ -29,7 +29,7 @@ export default class ContactsView extends JetView {
 
 	init() {
 		this.list = this.$$("contactsList");
-		contacts.waitData.then(() => this.list.sync(contacts));
+		this.list.sync(contacts);
 	}
 
 	urlChange() {

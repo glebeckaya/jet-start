@@ -3,7 +3,8 @@ const contacts = new webix.DataCollection({
 	save: "rest->http://localhost:8096/api/v1/contacts/",
 	scheme: {
 		$init: (obj) => {
-			if (!obj.Photo) obj.Photo = "./sources/imgs/user.png";
+			// debugger
+			obj.Photo = obj.Photo || "./sources/imgs/user.png";
 			obj.value = `${obj.FirstName} ${obj.LastName}`;
 		}
 	}

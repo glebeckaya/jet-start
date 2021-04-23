@@ -53,8 +53,7 @@ export default class PopupView extends JetView {
 								type: "date",
 								label: "Date",
 								name: "date",
-								format: webix.Date.dateToStr("%d %M %Y"),
-								stringResult: true,
+								format: "%d %M %Y",
 								invalidMessage: "This field is required",
 								bottomPadding: 15
 							},
@@ -63,7 +62,7 @@ export default class PopupView extends JetView {
 								type: "time",
 								label: "Time",
 								name: "time",
-								stringResult: true,
+								format: "%H:%i",
 								invalidMessage: "This field is required",
 								bottomPadding: 15
 							}
@@ -123,8 +122,12 @@ export default class PopupView extends JetView {
 		}
 		const values = this.form.getValues();
 
-		let parser = webix.Date.dateToStr("%Y-%m-%d %H:%i");
-		values.DueDate = parser(values.date).replace(/\b\d\d:\d\d\b/, values.time);
+		let parserDate = webix.Date.dateToStr("%Y-%m-%d");
+		let parserTime = webix.Date.dateToStr("%H:%i");
+
+		values.date = parserDate(values.date);
+		values.time = parserTime(values.time);
+		values.DueDate = `${values.date} ${values.time}`;
 
 		if (values.id) {
 			activities.updateItem(values.id, values);

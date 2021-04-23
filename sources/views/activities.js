@@ -17,7 +17,7 @@ export default class DataView extends JetView {
 							value: "Add activity",
 							css: "webix_primary",
 							width: 200,
-							click: () => this.addForm.showWindow()
+							click: () => this._jetPopup.showWindow("Add", "Add")
 						}
 					]
 				},
@@ -38,10 +38,7 @@ export default class DataView extends JetView {
 							header: ["Activity Type", {content: "selectFilter"}],
 							collection: activitytypes,
 							template(obj, common, val) {
-								if (val && val !== " ") {
-									return activitytypes.getItem(val).Value;
-								}
-								return " ";
+								return activitytypes.getItem(val).Value;
 							},
 							sort: "text"
 						},
@@ -74,7 +71,7 @@ export default class DataView extends JetView {
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
-							this.editForm.showWindow(id);
+							this._jetPopup.showWindow("Edit", "Save", id);
 						}
 					}
 				}
@@ -86,8 +83,7 @@ export default class DataView extends JetView {
 		this.table = this.$$("tableActivity");
 		webix.promise.all([contacts.waitData, activities.waitData, activitytypes.waitData]).then(() => {
 			this.table.sync(activities);
-			this.editForm = this.ui(new PopupView(this.app, "Edit", "Save", activities, activitytypes, contacts));
-			this.addForm = this.ui(new PopupView(this.app, "Add", "Add", activities, activitytypes, contacts));
+			this._jetPopup = this.ui(PopupView);
 		});
 	}
 

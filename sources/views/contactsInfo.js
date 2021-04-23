@@ -6,21 +6,21 @@ import statuses from "../models/statuses";
 export default class ContactsInfoView extends JetView {
 	config() {
 		const contactsTemplate = {
-			localId: "temp",
+			localId: "contactsTemplate",
 			type: "clean",
 			template: `<div class=' webix_template'>
 				<div class='custom-row custom-row__header'>#value#</div>
 				<div class='custom-row custom-row__main'>
-					<div><div class='photo'></div><p>Status: #status#</p></div>
+					<div><div class='photo'><img src=#Photo# alt=""></div><p>Status: #status#</p></div>
 					<div>
-						<p><i class="fas fa-envelope"></i> Email: #Email#</p>
-						<p><i class="fab fa-skype"></i> Skype: #Skype#</p>
-						<p><i class="fas fa-clipboard-list"></i> Job: #Job#</p>
-						<p><i class="fas fa-briefcase"></i> Company: #Company#</p>
+						<p><span class="fas fa-envelope"></span> Email: #Email#</p>
+						<p><span class="fab fa-skype"></span> Skype: #Skype#</p>
+						<p><span class="fas fa-clipboard-list"></span> Job: #Job#</p>
+						<p><span class="fas fa-briefcase"></span> Company: #Company#</p>
 					</div>
 					<div>
-						<p><i class="far fa-calendar-alt"></i> Birthday: #Birthday#</p>
-						<p><i class="fas fa-street-view"></i> Location: #Address#</p>
+						<p><span class="far fa-calendar-alt"></span> Birthday: #Birthday#</p>
+						<p><span class="fas fa-street-view"></span> Location: #Address#</p>
 					</div>
 				</div>
 			</div>`
@@ -55,12 +55,7 @@ export default class ContactsInfoView extends JetView {
 
 		return {
 			rows: [
-				{
-					cols: [
-						contactsTemplate,
-						contactsButtons
-					]
-				},
+				{cols: [contactsTemplate, contactsButtons]},
 				{}
 			]
 		};
@@ -75,7 +70,7 @@ export default class ContactsInfoView extends JetView {
 			if (contacts.exists(id)) {
 				const user = contacts.getItem(id);
 				user.status = statuses.getItem(user.StatusID).Value;
-				this.$$("temp").parse(user);
+				this.$$("contactsTemplate").parse(user);
 			}
 		});
 	}

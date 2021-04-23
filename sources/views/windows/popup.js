@@ -1,38 +1,42 @@
 import {JetView} from "webix-jet";
 
-export default class PopupView extends JetView {
-	constructor(app, title, action, dataActivities, dataActivityTypes, dataContacts) {
-		super(app);
-		this.title = title;
-		this.action = action;
-		this.dataActivities = dataActivities;
-		this.dataActivityTypes = dataActivityTypes;
-		this.dataContacts = dataContacts;
-	}
+import activities from "../../models/activities";
+import activitytypes from "../../models/activitytypes";
+import contacts from "../../models/contacts";
 
+export default class PopupView extends JetView {
 	config() {
 		return {
 			view: "window",
+			modal: true,
 			position: "center",
 			width: 800,
 			move: true,
-			head: `${this.title} activity`,
+			head: {
+				cols: [
+					{localId: "headerWindow", template: "#headerWindow#", type: "header"},
+					{view: "icon", icon: "wxi-close", click: () => this.hideWindow()}
+				]
+			},
 			body: {
 				view: "form",
 				localId: "form",
 				elements: [
-					{view: "textarea", name: "Details", label: "Details", height: 120, bottomPadding: 15, invalidMessage: "This field is required"},
+					{
+						view: "textarea",
+						name: "Details",
+						label: "Details",
+						height: 120,
+						bottomPadding: 15,
+						invalidMessage: "This field is required"
+					},
 					{
 						view: "combo",
 						label: "Type",
 						name: "TypeID",
 						bottomPadding: 15,
 						invalidMessage: "This field is required",
-						suggest: {
-							data: this.dataActivityTypes,
-							template: "#Value#",
-							body: {template: "#Value#"}
-						}
+						options: activitytypes
 					},
 					{
 						view: "combo",
@@ -40,7 +44,7 @@ export default class PopupView extends JetView {
 						name: "ContactID",
 						bottomPadding: 15,
 						invalidMessage: "This field is required",
-						options: this.dataContacts
+						options: contacts
 					},
 					{
 						cols: [
@@ -75,7 +79,7 @@ export default class PopupView extends JetView {
 					{
 						cols: [
 							{},
-							{view: "button", label: this.action, width: 100, click: () => this.saveActivity()},
+							{view: "button", localId: "buttonSave", width: 100, click: () => this.saveActivity()},
 							{view: "button", label: "Cancel", width: 100, click: () => this.hideWindow()}
 						]
 					}
@@ -93,12 +97,17 @@ export default class PopupView extends JetView {
 
 	init() {
 		this.form = this.$$("form");
+		this.title = "title";
+		this.action = "buttonName";
 	}
 
-	showWindow(id) {
-		this.getRoot().show();
-		this.values = this.dataActivities.getItem(id);
+	showWindow(title, buttonName, id) {
+		this.values = activities.getItem(id);
 		if (this.values) this.form.setValues(this.values);
+		const headerWindow = `${title} activity`;
+		this.$$("headerWindow").setValues({headerWindow});
+		this.$$("buttonSave").setValue(buttonName);
+		this.getRoot().show();
 	}
 
 	hideWindow() {
@@ -113,18 +122,17 @@ export default class PopupView extends JetView {
 			return false;
 		}
 		const values = this.form.getValues();
-		values.DueDate = `${values.date.split(" ")[0]} ${values.time}`;
 
 		let parser = webix.Date.dateToStr("%Y-%m-%d %H:%i");
-		values.DueDate = parser(values.DueDate);
+		values.DueDate = parser(values.date).replace(/\b\d\d:\d\d\b/, values.time);
 
 		if (values.id) {
-			this.dataActivities.updateItem(values.id, values);
+			activities.updateItem(values.id, values);
 			this.hideWindow();
 		}
 		else {
-			this.dataActivities.waitSave(() => {
-				this.dataActivities.add(values);
+			activities.waitSave(() => {
+				activities.add(values);
 			}).then(() => {
 				this.hideWindow();
 			});

@@ -33,7 +33,10 @@ export default class ContactsTableView extends JetView {
 						{
 							id: "date",
 							format: webix.Date.dateToStr("%d %M %Y"),
-							header: {content: "dateRangeFilter", inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}},
+							header: {
+								content: "dateRangeFilter",
+								inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}
+							},
 							width: 200,
 							sort: "date"
 						},

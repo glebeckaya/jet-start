@@ -13,7 +13,12 @@ export default class ContactsInfoView extends JetView {
 			template: obj => `<div class=' webix_template'>
 				<div class='custom-row custom-row__header'>${obj.value || ""}</div>
 				<div class='custom-row custom-row__main'>
-					<div><div class='photo'><img src= ${obj.Photo || "./sources/imgs/user.png"} alt=""></div><p>Status: ${obj.status || ""}</p></div>
+					<div>
+						<div class='photo'>
+							<img src= ${obj.Photo || "./sources/imgs/user.png"} alt="">
+						</div>
+						<p>Status: ${obj.status || ""}</p>
+					</div>
 					<div>
 						<p><span class="fas fa-envelope"></span> Email: ${obj.Email || ""}</p>
 						<p><span class="fab fa-skype"></span> Skype: ${obj.Skype || ""}</p>

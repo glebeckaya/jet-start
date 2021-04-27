@@ -43,11 +43,19 @@ export default class DataView extends JetView {
 						{
 							id: "date",
 							format: webix.Date.dateToStr("%d %M %Y"),
-							header: ["Due Date", {content: "dateRangeFilter", inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}}],
+							header: ["Due Date", {
+								content: "dateRangeFilter",
+								inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}
+							}],
 							width: 200,
 							sort: "date"
 						},
-						{id: "Details", header: ["Details", {content: "textFilter"}], sort: "string", fillspace: true},
+						{
+							id: "Details",
+							header: ["Details", {content: "textFilter"}],
+							sort: "string",
+							fillspace: true
+						},
 						{
 							id: "ContactID",
 							header: ["Contact", {content: "selectFilter"}],

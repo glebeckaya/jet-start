@@ -1,5 +1,6 @@
 import {JetView} from "webix-jet";
 
+import showConfirmMessage from "../helpers/deleteItem";
 import activities from "../models/activities";
 import activitytypes from "../models/activitytypes";
 import contacts from "../models/contacts";
@@ -17,7 +18,7 @@ export default class DataView extends JetView {
 							value: "Add activity",
 							css: "webix_primary",
 							width: 200,
-							click: () => this._jetPopup.showWindow("Add", "Add")
+							click: () => this.popup.showWindow(false, "Add", "Add")
 						}
 					]
 				},
@@ -61,11 +62,11 @@ export default class DataView extends JetView {
 					select: true,
 					onClick: {
 						"wxi-trash": (e, id) => {
-							this.showConfirmMessage(id);
+							showConfirmMessage(id, activities, "activity");
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
-							this._jetPopup.showWindow("Edit", "Save", id);
+							this.popup.showWindow(false, "Edit", "Save", id);
 						}
 					}
 				}
@@ -75,18 +76,8 @@ export default class DataView extends JetView {
 
 	init() {
 		this.table = this.$$("tableActivity");
+		activities.filter();
 		this.table.sync(activities);
-		this._jetPopup = this.ui(PopupView);
-	}
-
-	showConfirmMessage(id) {
-		if (!activities.getItem(id)) return;
-		webix.confirm({
-			ok: "OK",
-			cancel: "Cancel",
-			text: "Do you really want remove this activity?"
-		}).then(
-			() => activities.remove(id)
-		);
+		this.popup = this.ui(PopupView);
 	}
 }

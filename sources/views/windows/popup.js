@@ -44,6 +44,7 @@ export default class PopupView extends JetView {
 						view: "combo",
 						label: "Contact",
 						name: "ContactID",
+						readonly: false,
 						bottomPadding: 15,
 						invalidMessage: "This field is required",
 						options: contacts
@@ -98,15 +99,18 @@ export default class PopupView extends JetView {
 
 	init() {
 		this.form = this.$$("form");
-		this.title = "title";
-		this.action = "buttonName";
 	}
 
-	showWindow(title, buttonName, id) {
+	showWindow(readonly, title, buttonName, id) {
+		const contact = this.getParam("id", true);
 		if (id) {
 			this.values = activities.getItem(id);
 			this.form.setValues(this.values || {});
 		}
+		else {
+			this.form.setValues({ContactID: contacts.getItem(contact)} || {});
+		}
+		this.form.elements.ContactID.config.readonly = readonly;
 		const headerWindow = `${title} activity`;
 		this.$$("headerWindow").setValues({headerWindow});
 		this.$$("buttonSave").setValue(buttonName);
@@ -130,8 +134,11 @@ export default class PopupView extends JetView {
 		values.DueDate = `${values.date} ${values.time}`;
 
 		if (values.id) {
-			activities.updateItem(values.id, values);
-			this.hideWindow();
+			activities.waitSave(() => {
+				activities.updateItem(values.id, values);
+			}).then(() => {
+				this.hideWindow();
+			});
 		}
 		else {
 			activities.waitSave(() => {

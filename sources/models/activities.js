@@ -14,4 +14,3 @@ const activities = new webix.DataCollection({
 	}
 });
 export default activities;
-

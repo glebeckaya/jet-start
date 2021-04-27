@@ -42,10 +42,11 @@
 .custom-row .photo {
 	width: 150px;
 	height: 150px;
-	object-fit: contain;
 }
 .custom-row .photo img,
-.contacts-list .photo img {
+.contacts-list .photo img,
+.photo img {
 	width: 100%;
 	height: 100%;
+	object-fit: cover;
 }

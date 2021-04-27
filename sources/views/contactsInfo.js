@@ -1,6 +1,8 @@
 import {JetView} from "webix-jet";
 
+import activities from "../models/activities";
 import contacts from "../models/contacts";
+import files from "../models/files";
 import statuses from "../models/statuses";
 
 export default class ContactsInfoView extends JetView {
@@ -37,7 +39,8 @@ export default class ContactsInfoView extends JetView {
 							type: "icon",
 							label: "Delete",
 							icon: "far fa-trash-alt",
-							width: 150
+							width: 150,
+							click: () => this.removeContact(this.id)
 						},
 						{
 							view: "button",
@@ -45,7 +48,8 @@ export default class ContactsInfoView extends JetView {
 							type: "icon",
 							label: "Edit",
 							icon: "far fa-edit",
-							width: 150
+							width: 150,
+							click: () => this.show(`contactsForm?id=${this.id}`)
 						}
 					]
 				},
@@ -56,7 +60,7 @@ export default class ContactsInfoView extends JetView {
 		return {
 			rows: [
 				{cols: [contactsTemplate, contactsButtons]},
-				{}
+				{$subview: "contactsTable"}
 			]
 		};
 	}
@@ -66,12 +70,31 @@ export default class ContactsInfoView extends JetView {
 			contacts.waitData,
 			statuses.waitData
 		]).then(() => {
-			const id = this.getParam("id", true);
-			if (contacts.exists(id)) {
-				const user = contacts.getItem(id);
+			this.id = this.getParam("id", true);
+
+			if (contacts.exists(this.id)) {
+				const user = contacts.getItem(this.id);
 				user.status = statuses.getItem(user.StatusID).Value;
 				this.$$("contactsTemplate").parse(user);
 			}
+		});
+	}
+
+	removeContact(id) {
+		if (!contacts.getItem(id)) return;
+		webix.confirm({
+			ok: "OK",
+			cancel: "Cancel",
+			text: "Do you really want remove this contact?"
+		}).then(() => {
+			activities.data.order.forEach((item) => {
+				if (activities.getItem(item).ContactID === id) activities.remove(item);
+			});
+			files.data.order.forEach((item) => {
+				if (files.getItem(item).contact === id) files.remove(item);
+			});
+			contacts.remove(id);
+			this.show(`/top/contacts?id=${contacts.getFirstId()}/contactsInfo`);
 		});
 	}
 }

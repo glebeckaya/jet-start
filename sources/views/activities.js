@@ -18,7 +18,7 @@ export default class DataView extends JetView {
 							value: "Add activity",
 							css: "webix_primary",
 							width: 200,
-							click: () => this.popup.showWindow(false, "Add", "Add")
+							click: () => this.popup.showWindow({title: "Add", buttonName: "Add"})
 						}
 					]
 				},
@@ -74,7 +74,7 @@ export default class DataView extends JetView {
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
-							this.popup.showWindow(false, "Edit", "Save", id);
+							this.popup.showWindow({title: "Edit", buttonName: "Save", activityId: id});
 						}
 					}
 				}

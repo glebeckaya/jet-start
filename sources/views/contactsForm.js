@@ -155,6 +155,7 @@ export default class ContactsFormView extends JetView {
 																this.photoTemplate.parse({Photo: event.target.result});
 															};
 															reader.readAsDataURL(file);
+															return false;
 														}
 													}
 												},
@@ -202,24 +203,19 @@ export default class ContactsFormView extends JetView {
 	}
 
 	urlChange() {
-		webix.promise.all([
-			contacts.waitData,
-			statuses.waitData
-		]).then(() => {
-			this.id = this.getParam("id");
-			if (contacts.exists(this.id)) {
-				this.form.setValues(contacts.getItem(this.id) || {});
-				this.photoTemplate.setValues(contacts.getItem(this.id));
-				const headerForm = "Edit contact";
-				this.$$("headerForm").setValues({headerForm});
-				this.$$("buttonSave").setValue("Edit");
-			}
-			else {
-				const headerForm = "Add contact";
-				this.$$("headerForm").setValues({headerForm});
-				this.$$("buttonSave").setValue("Add");
-			}
-		});
+		this.id = this.getParam("id");
+		if (contacts.exists(this.id)) {
+			this.form.setValues(contacts.getItem(this.id) || {});
+			this.photoTemplate.setValues(contacts.getItem(this.id));
+			this.setLabels("Edit");
+		}
+		else this.setLabels("Add");
+	}
+
+	setLabels(label) {
+		const headerForm = `${label} contact`;
+		this.$$("headerForm").setValues({headerForm});
+		this.$$("buttonSave").setValue(label);
 	}
 
 	saveContact() {
@@ -231,20 +227,14 @@ export default class ContactsFormView extends JetView {
 		values.Birthday = webix.Date.dateToStr("%Y-%m-%d %h:%i")(values.Birthday);
 		values.Photo = this.photoTemplate.getValues().Photo;
 
-		if (values.id) {
-			contacts.waitSave(() => {
+		contacts.waitSave(() => {
+			if (values.id) {
 				contacts.updateItem(values.id, values);
-			}).then(() => {
-				this.cancelContactForm();
-			});
-		}
-		else {
-			contacts.waitSave(() => {
-				contacts.add(values);
-			}).then(() => {
-				this.cancelContactForm();
-			});
-		}
+			}
+			else contacts.add(values);
+		}).then((res) => {
+			this.cancelContactForm(res.id);
+		});
 		return values;
 	}
 
@@ -258,9 +248,9 @@ export default class ContactsFormView extends JetView {
 		);
 	}
 
-	cancelContactForm() {
-		if (contacts.exists(this.id)) {
-			this.show("./contactsInfo");
+	cancelContactForm(id) {
+		if (contacts.exists(id)) {
+			this.show(`/top/contacts?id=${id}/contactsInfo`);
 		}
 		else {
 			this.show(`/top/contacts?id=${contacts.getFirstId()}/contactsInfo`);

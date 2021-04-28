@@ -54,17 +54,11 @@ export default class ContactsView extends JetView {
 		contacts.waitData.then(() => {
 			const id = this.getParam("id");
 			const currentId = contacts.exists(id) ? id : contacts.getFirstId();
-			if (!this.getSubView()) {
-				this.show("./contactsInfo");
+			const subView = this.getSubView();
+			if ((!subView && currentId) || (subView.getUrlString() === "contactsInfo" && currentId)) {
+				this.list.select(currentId);
 			}
-			if (this.getSubView().getUrlString() === "contactsInfo") {
-				if (currentId) {
-					this.list.select(currentId);
-				}
-			}
-			if (this.getSubView().getUrlString() === "contactsForm") {
-				this.list.unselectAll();
-			}
+			if (subView.getUrlString() === "contactsForm") this.list.unselectAll();
 		});
 	}
 }

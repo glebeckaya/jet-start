@@ -92,14 +92,17 @@ export default class ContactsInfoView extends JetView {
 			cancel: "Cancel",
 			text: "Do you really want remove this contact?"
 		}).then(() => {
-			activities.data.order.forEach((item) => {
-				if (activities.getItem(item).ContactID === id) activities.remove(item);
-			});
-			files.data.order.forEach((item) => {
-				if (files.getItem(item).contact === id) files.remove(item);
-			});
+			this.removeItemsById(activities, id);
+			this.removeItemsById(files, id);
 			contacts.remove(id);
 			this.show(`/top/contacts?id=${contacts.getFirstId()}/contactsInfo`);
+		});
+	}
+
+	removeItemsById(collection, contact) {
+		collection.find((item) => {
+			if (item.ContactID === contact) collection.remove(item.id);
+			return item;
 		});
 	}
 }

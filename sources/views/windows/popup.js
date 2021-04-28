@@ -101,19 +101,19 @@ export default class PopupView extends JetView {
 		this.form = this.$$("form");
 	}
 
-	showWindow(readonly, title, buttonName, id) {
+	showWindow(options) {
 		const contact = this.getParam("id", true);
-		if (id) {
-			this.values = activities.getItem(id);
+		if (options.activityId) {
+			this.values = activities.getItem(options.activityId);
 			this.form.setValues(this.values || {});
 		}
 		else {
-			this.form.setValues({ContactID: contacts.getItem(contact)} || {});
+			this.form.setValues({ContactID: contacts.getItem(contact)});
 		}
-		this.form.elements.ContactID.config.readonly = readonly;
-		const headerWindow = `${title} activity`;
+		this.form.elements.ContactID.config.readonly = options.readonly || false;
+		const headerWindow = `${options.title} activity`;
 		this.$$("headerWindow").setValues({headerWindow});
-		this.$$("buttonSave").setValue(buttonName);
+		this.$$("buttonSave").setValue(options.buttonName);
 		this.getRoot().show();
 	}
 
@@ -133,20 +133,15 @@ export default class PopupView extends JetView {
 		values.time = parserTime(values.time);
 		values.DueDate = `${values.date} ${values.time}`;
 
-		if (values.id) {
-			activities.waitSave(() => {
+		activities.waitSave(() => {
+			if (values.id) {
 				activities.updateItem(values.id, values);
-			}).then(() => {
-				this.hideWindow();
-			});
-		}
-		else {
-			activities.waitSave(() => {
-				activities.add(values);
-			}).then(() => {
-				this.hideWindow();
-			});
-		}
+			}
+			else activities.add(values);
+		}).then(() => {
+			this.hideWindow();
+		});
+
 		return values;
 	}
 }

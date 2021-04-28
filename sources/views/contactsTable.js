@@ -50,7 +50,7 @@ export default class ContactsTableView extends JetView {
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
-							this.popup.showWindow(true, "Edit", "Save", id);
+							this.popup.showWindow({readonly: true, title: "Edit", buttonName: "Save", activityId: id});
 						}
 					}
 				},
@@ -62,7 +62,7 @@ export default class ContactsTableView extends JetView {
 							value: "Add activity",
 							css: "webix_primary",
 							width: 200,
-							click: () => this.popup.showWindow(true, "Add", "Add")
+							click: () => this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"})
 						}
 					]
 				}
@@ -111,10 +111,10 @@ export default class ContactsTableView extends JetView {
 					on: {
 						onBeforeFileAdd: (upload) => {
 							upload.lastModifiedDate = upload.file.lastModifiedDate;
-							upload.contact = this.id;
+							upload.ContactID = this.id;
 						},
 						onAfterFileAdd: () => {
-							files.filter(obj => obj.contact === this.id);
+							files.filter(obj => obj.ContactID === this.id);
 						}
 					}
 				}
@@ -153,10 +153,10 @@ export default class ContactsTableView extends JetView {
 			activitytypes.waitData,
 			files.waitData
 		]).then(() => {
-			this.id = this.getParam("id", true);
+			this.id = parseInt(this.getParam("id", true));
 			if (contacts.exists(this.id)) {
-				activities.filter(obj => obj.ContactID * 1 === this.id * 1);
-				files.filter(obj => obj.contact * 1 === this.id * 1);
+				activities.filter(obj => obj.ContactID === this.id);
+				files.filter(obj => obj.ContactID === this.id);
 				this.activitiesTable.sync(activities);
 				this.filesTable.sync(files);
 			}

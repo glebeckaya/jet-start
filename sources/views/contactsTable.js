@@ -2,59 +2,22 @@ import {JetView} from "webix-jet";
 
 import showConfirmMessage from "../helpers/deleteItem";
 import activities from "../models/activities";
-import activitytypes from "../models/activitytypes";
 import contacts from "../models/contacts";
 import files from "../models/files";
+import ActivityTableView from "./activityTableView";
 import PopupView from "./windows/popup";
 
 export default class ContactsTableView extends JetView {
 	config() {
+		const tableActivity = {
+			cols: [new ActivityTableView(this.app, false)],
+			localId: "activities"
+		};
+
 		const activitiesTable = {
 			id: "activitiesCell",
 			rows: [
-				{
-					view: "datatable",
-					localId: "activities",
-					columns: [
-						{
-							id: "State",
-							header: "",
-							template: "{common.checkbox()}",
-							checkValue: "Close",
-							uncheckValue: "Open",
-							width: 50
-						},
-						{
-							id: "TypeID",
-							header: {content: "selectFilter"},
-							collection: activitytypes,
-							sort: "text"
-						},
-						{
-							id: "date",
-							format: webix.Date.dateToStr("%d %M %Y"),
-							header: {
-								content: "dateRangeFilter",
-								inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}
-							},
-							width: 200,
-							sort: "date"
-						},
-						{id: "Details", header: {content: "textFilter"}, sort: "string", fillspace: true},
-						{id: "edit", header: "", template: "{common.editIcon()}", width: 50},
-						{id: "del", header: "", template: "{common.trashIcon()}", width: 50}
-					],
-					onClick: {
-						"wxi-trash": (e, id) => {
-							const state = this.activitiesTable.getState();
-							showConfirmMessage(this.app, id, activities, "activity", state);
-							return false;
-						},
-						"wxi-pencil": (e, id) => {
-							this.popup.showWindow({readonly: true, title: "Edit", buttonName: "Save", activityId: id});
-						}
-					}
-				},
+				tableActivity,
 				{
 					cols: [
 						{},
@@ -64,7 +27,7 @@ export default class ContactsTableView extends JetView {
 							css: "webix_primary",
 							width: 200,
 							click: () => {
-								this.state = this.activitiesTable.getState();
+								this.state = this.activitiesTable.queryView({view: "datatable"}).getState();
 								this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
 							}
 						}
@@ -119,6 +82,7 @@ export default class ContactsTableView extends JetView {
 						},
 						onAfterFileAdd: () => {
 							files.filter(obj => obj.ContactID === this.id);
+							this.filesTable.sync(files);
 						}
 					}
 				}
@@ -148,17 +112,12 @@ export default class ContactsTableView extends JetView {
 		this.activitiesTable = this.$$("activities");
 		this.filesTable = this.$$("files");
 		this.popup = this.ui(PopupView);
-		this.on(this.app, "onCollectionChange", (state) => {
-			this.activitiesTable.setState(state);
-			this.activitiesTable.filterByAll();
-		});
 	}
 
 	urlChange() {
 		webix.promise.all([
 			contacts.waitData,
 			activities.waitData,
-			activitytypes.waitData,
 			files.waitData
 		]).then(() => {
 			this.id = parseInt(this.getParam("id", true));

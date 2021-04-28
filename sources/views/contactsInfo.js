@@ -100,9 +100,7 @@ export default class ContactsInfoView extends JetView {
 	}
 
 	removeItemsById(collection, contact) {
-		collection.find((item) => {
-			if (item.ContactID === contact) collection.remove(item.id);
-			return item;
-		});
+		const items = collection.find(obj => obj.ContactID === contact);
+		items.forEach(item => collection.remove(item.id));
 	}
 }

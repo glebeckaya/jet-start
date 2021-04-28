@@ -70,7 +70,8 @@ export default class DataView extends JetView {
 					select: true,
 					onClick: {
 						"wxi-trash": (e, id) => {
-							showConfirmMessage(id, activities, "activity");
+							const state = this.table.getState();
+							showConfirmMessage(this.app, id, activities, "activity", state);
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
@@ -87,5 +88,9 @@ export default class DataView extends JetView {
 		activities.filter();
 		this.table.sync(activities);
 		this.popup = this.ui(PopupView);
+		this.on(this.app, "onCollectionChange", (state) => {
+			this.table.setState(state);
+			this.table.filterByAll();
+		});
 	}
 }

@@ -46,7 +46,8 @@ export default class ContactsTableView extends JetView {
 					],
 					onClick: {
 						"wxi-trash": (e, id) => {
-							showConfirmMessage(id, activities, "activity");
+							const state = this.activitiesTable.getState();
+							showConfirmMessage(this.app, id, activities, "activity", state);
 							return false;
 						},
 						"wxi-pencil": (e, id) => {
@@ -62,7 +63,10 @@ export default class ContactsTableView extends JetView {
 							value: "Add activity",
 							css: "webix_primary",
 							width: 200,
-							click: () => this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"})
+							click: () => {
+								this.state = this.activitiesTable.getState();
+								this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
+							}
 						}
 					]
 				}
@@ -98,7 +102,7 @@ export default class ContactsTableView extends JetView {
 					],
 					onClick: {
 						"wxi-trash": (e, id) => {
-							showConfirmMessage(id, files, "file");
+							showConfirmMessage(this.app, id, files, "file");
 							return false;
 						}
 					}
@@ -144,6 +148,10 @@ export default class ContactsTableView extends JetView {
 		this.activitiesTable = this.$$("activities");
 		this.filesTable = this.$$("files");
 		this.popup = this.ui(PopupView);
+		this.on(this.app, "onCollectionChange", (state) => {
+			this.activitiesTable.setState(state);
+			this.activitiesTable.filterByAll();
+		});
 	}
 
 	urlChange() {

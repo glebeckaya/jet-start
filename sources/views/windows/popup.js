@@ -140,6 +140,8 @@ export default class PopupView extends JetView {
 			else activities.add(values);
 		}).then(() => {
 			this.hideWindow();
+			webix.message("Activity was saved");
+			this.app.callEvent("onCollectionChange");
 		});
 
 		return values;

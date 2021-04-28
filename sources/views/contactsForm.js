@@ -205,8 +205,9 @@ export default class ContactsFormView extends JetView {
 	urlChange() {
 		this.id = this.getParam("id");
 		if (contacts.exists(this.id)) {
-			this.form.setValues(contacts.getItem(this.id) || {});
-			this.photoTemplate.setValues(contacts.getItem(this.id));
+			const contact = contacts.getItem(this.id);
+			this.form.setValues(contact || {});
+			this.photoTemplate.setValues(contact);
 			this.setLabels("Edit");
 		}
 		else this.setLabels("Add");

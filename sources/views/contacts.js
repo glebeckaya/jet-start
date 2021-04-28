@@ -55,10 +55,12 @@ export default class ContactsView extends JetView {
 			const id = this.getParam("id");
 			const currentId = contacts.exists(id) ? id : contacts.getFirstId();
 			const subView = this.getSubView();
-			if ((!subView && currentId) || (subView.getUrlString() === "contactsInfo" && currentId)) {
-				this.list.select(currentId);
+			if (subView) {
+				const nameSubView = subView.getUrlString();
+				if (nameSubView === "contactsInfo" && currentId) this.list.select(currentId);
+				if (nameSubView === "contactsForm") this.list.unselectAll();
 			}
-			if (subView.getUrlString() === "contactsForm") this.list.unselectAll();
+			else this.list.select(currentId);
 		});
 	}
 }

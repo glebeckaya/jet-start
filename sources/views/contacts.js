@@ -48,6 +48,14 @@ export default class ContactsView extends JetView {
 	init() {
 		this.list = this.$$("contactsList");
 		this.list.sync(contacts);
+		this.on(this.app, "onCancelForm", (id) => {
+			if (contacts.exists(id)) {
+				this.show(`../contacts?id=${id}/contactsInfo`);
+			}
+			else {
+				this.show(`../contacts?id=${contacts.getFirstId()}/contactsInfo`);
+			}
+		});
 	}
 
 	urlChange() {

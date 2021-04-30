@@ -122,6 +122,7 @@ export default class ContactsTableView extends JetView {
 		]).then(() => {
 			this.id = parseInt(this.getParam("id", true));
 			if (contacts.exists(this.id)) {
+				this.activitiesTable.queryView({view: "datatable"}).setState({filter: {}});
 				activities.filter(obj => obj.ContactID === this.id);
 				files.filter(obj => obj.ContactID === this.id);
 				this.activitiesTable.sync(activities);

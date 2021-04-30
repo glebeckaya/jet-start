@@ -250,12 +250,7 @@ export default class ContactsFormView extends JetView {
 	}
 
 	cancelContactForm(id) {
-		if (contacts.exists(id)) {
-			this.show(`/top/contacts?id=${id}/contactsInfo`);
-		}
-		else {
-			this.show(`/top/contacts?id=${contacts.getFirstId()}/contactsInfo`);
-		}
+		this.app.callEvent("onCancelForm", [id]);
 	}
 
 	removePhoto() {

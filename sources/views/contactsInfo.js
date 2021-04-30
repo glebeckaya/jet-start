@@ -95,7 +95,7 @@ export default class ContactsInfoView extends JetView {
 			this.removeItemsById(activities, id);
 			this.removeItemsById(files, id);
 			contacts.remove(id);
-			this.show(`/top/contacts?id=${contacts.getFirstId()}/contactsInfo`);
+			this.app.callEvent("onCancelForm");
 		});
 	}
 

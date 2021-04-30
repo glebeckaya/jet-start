@@ -1,6 +1,8 @@
 import {JetView} from "webix-jet";
 
+import activities from "../models/activities";
 import contacts from "../models/contacts";
+import files from "../models/files";
 import statuses from "../models/statuses";
 
 export default class ContactsInfoView extends JetView {
@@ -11,7 +13,12 @@ export default class ContactsInfoView extends JetView {
 			template: obj => `<div class=' webix_template'>
 				<div class='custom-row custom-row__header'>${obj.value || ""}</div>
 				<div class='custom-row custom-row__main'>
-					<div><div class='photo'><img src= ${obj.Photo || "./sources/imgs/user.png"} alt=""></div><p>Status: ${obj.status || ""}</p></div>
+					<div>
+						<div class='photo'>
+							<img src= ${obj.Photo || "./sources/imgs/user.png"} alt="">
+						</div>
+						<p>Status: ${obj.status || ""}</p>
+					</div>
 					<div>
 						<p><span class="fas fa-envelope"></span> Email: ${obj.Email || ""}</p>
 						<p><span class="fab fa-skype"></span> Skype: ${obj.Skype || ""}</p>
@@ -37,7 +44,8 @@ export default class ContactsInfoView extends JetView {
 							type: "icon",
 							label: "Delete",
 							icon: "far fa-trash-alt",
-							width: 150
+							width: 150,
+							click: () => this.removeContact(this.id)
 						},
 						{
 							view: "button",
@@ -45,7 +53,8 @@ export default class ContactsInfoView extends JetView {
 							type: "icon",
 							label: "Edit",
 							icon: "far fa-edit",
-							width: 150
+							width: 150,
+							click: () => this.show(`contactsForm?id=${this.id}`)
 						}
 					]
 				},
@@ -56,7 +65,7 @@ export default class ContactsInfoView extends JetView {
 		return {
 			rows: [
 				{cols: [contactsTemplate, contactsButtons]},
-				{}
+				{$subview: "contactsTable"}
 			]
 		};
 	}
@@ -66,12 +75,32 @@ export default class ContactsInfoView extends JetView {
 			contacts.waitData,
 			statuses.waitData
 		]).then(() => {
-			const id = this.getParam("id", true);
-			if (contacts.exists(id)) {
-				const user = contacts.getItem(id);
+			this.id = this.getParam("id", true);
+
+			if (contacts.exists(this.id)) {
+				const user = contacts.getItem(this.id);
 				user.status = statuses.getItem(user.StatusID).Value;
 				this.$$("contactsTemplate").parse(user);
 			}
 		});
+	}
+
+	removeContact(id) {
+		if (!contacts.getItem(id)) return;
+		webix.confirm({
+			ok: "OK",
+			cancel: "Cancel",
+			text: "Do you really want remove this contact?"
+		}).then(() => {
+			this.removeItemsById(activities, id);
+			this.removeItemsById(files, id);
+			contacts.remove(id);
+			this.app.callEvent("onCancelForm");
+		});
+	}
+
+	removeItemsById(collection, contact) {
+		const items = collection.find(obj => obj.ContactID === contact);
+		items.forEach(item => collection.remove(item.id));
 	}
 }

@@ -44,6 +44,7 @@ export default class PopupView extends JetView {
 						view: "combo",
 						label: "Contact",
 						name: "ContactID",
+						readonly: false,
 						bottomPadding: 15,
 						invalidMessage: "This field is required",
 						options: contacts
@@ -98,18 +99,21 @@ export default class PopupView extends JetView {
 
 	init() {
 		this.form = this.$$("form");
-		this.title = "title";
-		this.action = "buttonName";
 	}
 
-	showWindow(title, buttonName, id) {
-		if (id) {
-			this.values = activities.getItem(id);
+	showWindow(options) {
+		const contact = this.getParam("id", true);
+		if (options.activityId) {
+			this.values = activities.getItem(options.activityId);
 			this.form.setValues(this.values || {});
 		}
-		const headerWindow = `${title} activity`;
+		else {
+			this.form.setValues({ContactID: contacts.getItem(contact)});
+		}
+		this.form.elements.ContactID.config.readonly = options.readonly || false;
+		const headerWindow = `${options.title} activity`;
 		this.$$("headerWindow").setValues({headerWindow});
-		this.$$("buttonSave").setValue(buttonName);
+		this.$$("buttonSave").setValue(options.buttonName);
 		this.getRoot().show();
 	}
 
@@ -129,17 +133,17 @@ export default class PopupView extends JetView {
 		values.time = parserTime(values.time);
 		values.DueDate = `${values.date} ${values.time}`;
 
-		if (values.id) {
-			activities.updateItem(values.id, values);
+		activities.waitSave(() => {
+			if (values.id) {
+				activities.updateItem(values.id, values);
+			}
+			else activities.add(values);
+		}).then(() => {
 			this.hideWindow();
-		}
-		else {
-			activities.waitSave(() => {
-				activities.add(values);
-			}).then(() => {
-				this.hideWindow();
-			});
-		}
+			webix.message("Activity was saved");
+			this.app.callEvent("onCollectionChange");
+		});
+
 		return values;
 	}
 }

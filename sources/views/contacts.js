@@ -7,22 +7,40 @@ export default class ContactsView extends JetView {
 		return {
 			cols: [
 				{
-					view: "list",
-					localId: "contactsList",
-					width: 300,
-					css: "contacts-list",
-					type: {
-						template: obj => `<div class='photo'><img src=${obj.Photo || "./sources/imgs/user.png"} alt=""></div>
-								<div><p>${obj.FirstName} ${obj.LastName}</p><p>${obj.Company}</p></div>`,
-						height: 65
-					},
-					scroll: "y",
-					select: true,
-					on: {
-						onAfterSelect: id => this.setParam("id", id, true)
-					}
+					rows: [
+						{
+							view: "list",
+							localId: "contactsList",
+							width: 300,
+							css: "contacts-list",
+							type: {
+								template: obj => `<div class='photo'>
+													<img src=${obj.Photo || "./sources/imgs/user.png"} alt="">
+												</div>
+												<div>
+													<p>${obj.FirstName} ${obj.LastName}</p>
+													<p>${obj.Company}</p>
+												</div>`,
+								height: 65
+							},
+							scroll: "y",
+							select: true,
+							on: {
+								onAfterSelect: (id) => {
+									this.setParam("id", id, true);
+									this.show("./contactsInfo");
+								}
+							}
+						},
+						{
+							view: "button",
+							value: "Add contact",
+							css: "webix_primary",
+							click: () => this.show("./contactsForm")
+						}
+					]
 				},
-				{$subview: "contactsInfo"}
+				{$subview: true}
 			]
 		};
 	}
@@ -30,15 +48,27 @@ export default class ContactsView extends JetView {
 	init() {
 		this.list = this.$$("contactsList");
 		this.list.sync(contacts);
+		this.on(this.app, "onCancelForm", (id) => {
+			if (contacts.exists(id)) {
+				this.show(`../contacts?id=${id}/contactsInfo`);
+			}
+			else {
+				this.show(`../contacts?id=${contacts.getFirstId()}/contactsInfo`);
+			}
+		});
 	}
 
 	urlChange() {
 		contacts.waitData.then(() => {
 			const id = this.getParam("id");
 			const currentId = contacts.exists(id) ? id : contacts.getFirstId();
-			if (currentId) {
-				this.list.select(currentId);
+			const subView = this.getSubView();
+			if (subView) {
+				const nameSubView = subView.getUrlString();
+				if (nameSubView === "contactsInfo" && currentId) this.list.select(currentId);
+				if (nameSubView === "contactsForm") this.list.unselectAll();
 			}
+			else this.list.select(currentId);
 		});
 	}
 }

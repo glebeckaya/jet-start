@@ -73,27 +73,31 @@ export default class DataView extends JetView {
 		}
 		if (value === "today") {
 			const endDate = new Date(year, month, dayOfMonth + 1);
-			this.tableActivity.queryView({view: "datatable"}).setState({filter: {date: {start: today, end: endDate}}});
+			this.setStateFilter({filter: {date: {start: today, end: endDate}}});
 		}
 		if (value === "tomorrow") {
 			const endDate = new Date(year, month, dayOfMonth + 2);
 			const startDate = new Date(year, month, dayOfMonth + 1);
-			this.tableActivity.queryView({view: "datatable"}).setState({filter: {date: {start: startDate, end: endDate}}});
+			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
 		}
 		if (value === "thisweek") {
 			const startDate = new Date(year, month, dayOfMonth - (dayOfWeek - 1));
 			const endDate = new Date(year, month, dayOfMonth + (7 - dayOfWeek));
-			this.tableActivity.queryView({view: "datatable"}).setState({filter: {date: {start: startDate, end: endDate}}});
+			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
 		}
 		if (value === "thismonth") {
 			const startDate = new Date(year, month, 1);
 			const endDate = new Date(year, month + 1, 0);
-			this.tableActivity.queryView({view: "datatable"}).setState({filter: {date: {start: startDate, end: endDate}}});
+			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
 		}
 	}
 
 	throwOffFilters() {
 		this.tableActivity.queryView({view: "datatable"}).setState({filter: {}});
 		activities.filter();
+	}
+
+	setStateFilter(state) {
+		this.tableActivity.queryView({view: "datatable"}).setState(state);
 	}
 }

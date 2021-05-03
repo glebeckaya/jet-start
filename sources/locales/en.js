@@ -74,6 +74,7 @@ export default {
 	AddContact: "Add contact",
 	EditContact: "Edit contact",
 	CancelFormContact: "Do you really want cancel this form?",
+	photo: "photo?",
 
 	// Contacts
 	TypeContact: "type to find matching contacts",

@@ -259,8 +259,8 @@ export default class ContactsFormView extends JetView {
 	removePhoto() {
 		webix.confirm({
 			ok: "OK",
-			cancel: "Cancel",
-			text: "Do you really want delete photo?"
+			cancel: this._("Cancel"),
+			text: `${this._("wantDelete")} ${this._("photo")}`
 		}).then(() => this.photoTemplate.parse({Photo: ""}));
 	}
 }

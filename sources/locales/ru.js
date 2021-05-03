@@ -75,6 +75,7 @@ export default {
 	AddContact: "Добавить контакт",
 	EditContact: "Редактировать контакт",
 	CancelFormContact: "Вы действительно хотите закрыть форму?",
+	photo: "фото?",
 
 	// Contacts
 	TypeContact: "введите текст, чтобы найти контакт",
@@ -85,5 +86,5 @@ export default {
 
 	// deleteItem
 	requiredEmail: "ваше-имя@домен.com - требуемый формат для Email",
-	wantDelete: "Вы действительно хотите удалить этот"
+	wantDelete: "Вы действительно хотите удалить"
 };

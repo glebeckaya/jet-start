@@ -9,6 +9,8 @@ const parserTime = webix.Date.dateToStr("%H:%i");
 
 export default class PopupView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		return {
 			view: "window",
 			modal: true,
@@ -27,26 +29,26 @@ export default class PopupView extends JetView {
 					{
 						view: "textarea",
 						name: "Details",
-						label: "Details",
+						label: _("Details"),
 						height: 120,
 						bottomPadding: 15,
-						invalidMessage: "This field is required"
+						invalidMessage: _("fieldRequired")
 					},
 					{
 						view: "combo",
-						label: "Type",
+						label: _("Type"),
 						name: "TypeID",
 						bottomPadding: 15,
-						invalidMessage: "This field is required",
+						invalidMessage: _("fieldRequired"),
 						options: activitytypes
 					},
 					{
 						view: "combo",
-						label: "Contact",
+						label: _("Contact"),
 						name: "ContactID",
 						readonly: false,
 						bottomPadding: 15,
-						invalidMessage: "This field is required",
+						invalidMessage: _("fieldRequired"),
 						options: contacts
 					},
 					{
@@ -54,26 +56,26 @@ export default class PopupView extends JetView {
 							{
 								view: "datepicker",
 								type: "date",
-								label: "Date",
+								label: _("Date"),
 								name: "date",
 								format: "%d %M %Y",
-								invalidMessage: "This field is required",
+								invalidMessage: _("fieldRequired"),
 								bottomPadding: 15
 							},
 							{
 								view: "datepicker",
 								type: "time",
-								label: "Time",
+								label: _("Time"),
 								name: "time",
 								format: "%H:%i",
-								invalidMessage: "This field is required",
+								invalidMessage: _("fieldRequired"),
 								bottomPadding: 15
 							}
 						]
 					},
 					{
 						view: "checkbox",
-						label: "Completed",
+						label: _("Completed"),
 						name: "State",
 						uncheckValue: "Open",
 						checkValue: "Close"
@@ -82,7 +84,7 @@ export default class PopupView extends JetView {
 						cols: [
 							{},
 							{view: "button", localId: "buttonSave", width: 100, click: () => this.saveActivity()},
-							{view: "button", label: "Cancel", width: 100, click: () => this.hideWindow()}
+							{view: "button", label: _("Cancel"), width: 100, click: () => this.hideWindow()}
 						]
 					}
 				],
@@ -99,6 +101,7 @@ export default class PopupView extends JetView {
 
 	init() {
 		this.form = this.$$("form");
+		this._ = this.app.getService("locale")._;
 	}
 
 	showWindow(options) {
@@ -111,9 +114,9 @@ export default class PopupView extends JetView {
 			this.form.setValues({ContactID: contacts.getItem(contact)});
 		}
 		this.form.elements.ContactID.config.readonly = options.readonly || false;
-		const headerWindow = `${options.title} activity`;
+		const headerWindow = this._(`${options.title}Activity`);
 		this.$$("headerWindow").setValues({headerWindow});
-		this.$$("buttonSave").setValue(options.buttonName);
+		this.$$("buttonSave").setValue(this._(options.buttonName));
 		this.getRoot().show();
 	}
 
@@ -125,7 +128,7 @@ export default class PopupView extends JetView {
 
 	saveActivity() {
 		if (!this.form.validate()) {
-			webix.message("Please, check all fields!");
+			webix.message(this._("checkFields"));
 			return false;
 		}
 		const values = this.form.getValues();
@@ -140,7 +143,7 @@ export default class PopupView extends JetView {
 			else activities.add(values);
 		}).then(() => {
 			this.hideWindow();
-			webix.message("Activity was saved");
+			webix.message(this._("ActivityWasSaved"));
 			this.app.callEvent("onCollectionChange");
 		});
 

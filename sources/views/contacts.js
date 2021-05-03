@@ -4,10 +4,20 @@ import contacts from "../models/contacts";
 
 export default class ContactsView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		return {
 			cols: [
 				{
 					rows: [
+						{
+							view: "text",
+							localId: "filterView",
+							placeholder: _("TypeContact"),
+							on: {
+								onTimedKeyPress: () => this.filterContacts()
+							}
+						},
 						{
 							view: "list",
 							localId: "contactsList",
@@ -34,7 +44,7 @@ export default class ContactsView extends JetView {
 						},
 						{
 							view: "button",
-							value: "Add contact",
+							value: _("AddContact"),
 							css: "webix_primary",
 							click: () => this.show("./contactsForm")
 						}
@@ -47,6 +57,7 @@ export default class ContactsView extends JetView {
 
 	init() {
 		this.list = this.$$("contactsList");
+		this.filter = this.$$("filterView");
 		this.list.sync(contacts);
 		this.on(this.app, "onCancelForm", (id) => {
 			if (contacts.exists(id)) {
@@ -70,5 +81,14 @@ export default class ContactsView extends JetView {
 			}
 			else this.list.select(currentId);
 		});
+	}
+
+	filterContacts() {
+		const value = this.filter.getValue().toLowerCase();
+		contacts.filter(obj => obj.value.toLowerCase().indexOf(value) !== -1 ||
+		obj.Email.toLowerCase().indexOf(value) !== -1 ||
+		obj.Skype.toLowerCase().indexOf(value) !== -1 ||
+		obj.Job.toLowerCase().indexOf(value) !== -1 ||
+		obj.Company.toLowerCase().indexOf(value) !== -1);
 	}
 }

@@ -13,6 +13,8 @@ export default class ActivityTableView extends JetView {
 	}
 
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		return {
 			view: "datatable",
 			localId: "tableActivity",
@@ -27,14 +29,17 @@ export default class ActivityTableView extends JetView {
 				},
 				{
 					id: "TypeID",
-					header: ["Activity Type", {content: "selectFilter"}],
+					header: [_("ActivityType"), {content: "selectFilter"}],
 					collection: activitytypes,
+					template: obj => `<span class="fas fa-${activitytypes.getItem(obj.TypeID).Icon} 
+										fa-${activitytypes.getItem(obj.TypeID).Icon}-alt"></span> 
+										${activitytypes.getItem(obj.TypeID).Value}`,
 					sort: "text"
 				},
 				{
 					id: "date",
 					format: webix.Date.dateToStr("%d %M %Y"),
-					header: ["Due Date", {
+					header: [_("DueDate"), {
 						content: "dateRangeFilter",
 						inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}
 					}],
@@ -43,13 +48,13 @@ export default class ActivityTableView extends JetView {
 				},
 				{
 					id: "Details",
-					header: ["Details", {content: "textFilter"}],
+					header: [_("Details"), {content: "textFilter"}],
 					sort: "string",
 					fillspace: true
 				},
 				{
 					id: "ContactID",
-					header: ["Contact", {content: "selectFilter"}],
+					header: [_("Contact"), {content: "selectFilter"}],
 					collection: contacts,
 					sort: "string",
 					fillspace: true
@@ -61,8 +66,14 @@ export default class ActivityTableView extends JetView {
 			select: true,
 			onClick: {
 				"wxi-trash": (e, id) => {
-					const state = this.table.getState();
-					showConfirmMessage(this.app, id, activities, "activity", state);
+					showConfirmMessage({
+						app: this.app,
+						Id: id,
+						collection: activities,
+						text: `${_("wantDelete")} ${_("activity")}?`,
+						cancel: _("Cancel"),
+						state: this.table.getState()
+					});
 					return false;
 				},
 				"wxi-pencil": (e, id) => {
@@ -74,8 +85,6 @@ export default class ActivityTableView extends JetView {
 
 	init() {
 		this.table = this.$$("tableActivity");
-		activities.filter();
-		this.table.sync(activities);
 		if (!this.contactCol) this.table.hideColumn("ContactID");
 		this.popup = this.ui(PopupView);
 		this.on(this.app, "onCollectionChange", (state) => {

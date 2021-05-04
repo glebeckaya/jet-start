@@ -81,9 +81,10 @@ export default class ContactsInfoView extends JetView {
 
 			if (contacts.exists(this.id)) {
 				const user = contacts.getItem(this.id);
-				const icon = statuses.getItem(user.StatusID).Icon;
-				const status = statuses.getItem(user.StatusID).Value;
-				user.status = `${status} <span class="fas fa-${icon} fa-${icon}-alt"></span>`;
+				const status = statuses.getItem(user.StatusID);
+				const statusIcon = status ? status.Icon : "ban";
+				const statusName = status ? status.Value : "default";
+				user.status = `${statusName} <span class="fas fa-${statusIcon} fa-${statusIcon}-alt"></span>`;
 				this.$$("contactsTemplate").parse(user);
 			}
 		});

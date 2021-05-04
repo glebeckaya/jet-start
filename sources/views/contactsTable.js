@@ -4,7 +4,7 @@ import showConfirmMessage from "../helpers/deleteItem";
 import activities from "../models/activities";
 import contacts from "../models/contacts";
 import files from "../models/files";
-import ActivityTableView from "./activityTableView";
+import {ActivityTableView, tableLocalID} from "./activityTableView";
 import PopupView from "./windows/popup";
 
 export default class ContactsTableView extends JetView {
@@ -29,7 +29,7 @@ export default class ContactsTableView extends JetView {
 							css: "webix_primary",
 							width: 200,
 							click: () => {
-								this.state = this.activitiesTable.queryView({view: "datatable"}).getState();
+								this.state = this.activitiesTable.queryView({localId: tableLocalID}).getState();
 								this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
 							}
 						}
@@ -130,10 +130,10 @@ export default class ContactsTableView extends JetView {
 		]).then(() => {
 			this.id = parseInt(this.getParam("id", true));
 			if (contacts.exists(this.id)) {
-				this.activitiesTable.queryView({view: "datatable"}).setState({filter: {}});
+				this.activitiesTable.queryView({localId: tableLocalID}).setState({filter: {}});
 				activities.filter(obj => obj.ContactID === this.id);
 				files.filter(obj => obj.ContactID === this.id);
-				this.activitiesTable.queryView({view: "datatable"}).sync(activities);
+				this.activitiesTable.queryView({localId: tableLocalID}).sync(activities);
 				this.filesTable.sync(files);
 			}
 		});

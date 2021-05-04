@@ -6,7 +6,9 @@ import activitytypes from "../models/activitytypes";
 import contacts from "../models/contacts";
 import PopupView from "./windows/popup";
 
-export default class ActivityTableView extends JetView {
+const tableLocalID = "tableActivity";
+
+class ActivityTableView extends JetView {
 	constructor(app, column) {
 		super(app);
 		this.contactCol = column;
@@ -17,7 +19,7 @@ export default class ActivityTableView extends JetView {
 
 		return {
 			view: "datatable",
-			localId: "tableActivity",
+			localId: tableLocalID,
 			columns: [
 				{
 					id: "State",
@@ -31,9 +33,10 @@ export default class ActivityTableView extends JetView {
 					id: "TypeID",
 					header: [_("ActivityType"), {content: "selectFilter"}],
 					collection: activitytypes,
-					template: obj => `<span class="fas fa-${activitytypes.getItem(obj.TypeID).Icon} 
-										fa-${activitytypes.getItem(obj.TypeID).Icon}-alt"></span> 
-										${activitytypes.getItem(obj.TypeID).Value}`,
+					template: obj => `<span 
+						class="fas fa-${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Icon : "ban"} 
+						fa-${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Icon : "ban"}-alt"></span> 
+						${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Value : "default"}`,
 					sort: "text"
 				},
 				{
@@ -84,7 +87,7 @@ export default class ActivityTableView extends JetView {
 	}
 
 	init() {
-		this.table = this.$$("tableActivity");
+		this.table = this.$$(tableLocalID);
 		if (!this.contactCol) this.table.hideColumn("ContactID");
 		this.popup = this.ui(PopupView);
 		this.on(this.app, "onCollectionChange", (state) => {
@@ -93,3 +96,5 @@ export default class ActivityTableView extends JetView {
 		});
 	}
 }
+
+export {ActivityTableView, tableLocalID};

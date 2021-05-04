@@ -1,7 +1,7 @@
 import {JetView} from "webix-jet";
 
 import activities from "../models/activities";
-import ActivityTableView from "./activityTableView";
+import {ActivityTableView, tableLocalID} from "./activityTableView";
 import PopupView from "./windows/popup";
 
 export default class DataView extends JetView {
@@ -51,9 +51,9 @@ export default class DataView extends JetView {
 		this.tableActivity = this.$$("tableActivity");
 	}
 
-	urlChange() {
+	ready() {
 		activities.filter();
-		this.tableActivity.queryView({view: "datatable"}).sync(activities);
+		this.tableActivity.queryView({localId: tableLocalID}).sync(activities);
 	}
 
 	filterActivities() {
@@ -93,11 +93,11 @@ export default class DataView extends JetView {
 	}
 
 	throwOffFilters() {
-		this.tableActivity.queryView({view: "datatable"}).setState({filter: {}});
+		this.tableActivity.queryView({localId: tableLocalID}).setState({filter: {}});
 		activities.filter();
 	}
 
 	setStateFilter(state) {
-		this.tableActivity.queryView({view: "datatable"}).setState(state);
+		this.tableActivity.queryView({localId: tableLocalID}).setState(state);
 	}
 }

@@ -41,14 +41,14 @@ export default class ContactsFormView extends JetView {
 									label: _("FirstName"),
 									name: "FirstName",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
 									label: _("LastName"),
 									name: "LastName",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "datepicker",
@@ -57,7 +57,7 @@ export default class ContactsFormView extends JetView {
 									name: "StartDate",
 									format: "%d %M %Y",
 									value: new Date(),
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									bottomPadding: 15
 								},
 								{
@@ -65,7 +65,7 @@ export default class ContactsFormView extends JetView {
 									label: _("Status"),
 									name: "StatusID",
 									bottomPadding: 15,
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									suggest: {
 										data: statuses,
 										body: {template: "#Value#"}
@@ -76,28 +76,28 @@ export default class ContactsFormView extends JetView {
 									label: _("Job"),
 									name: "Job",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
 									label: _("Company"),
 									name: "Company",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
 									label: _("Website"),
 									name: "Website",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
 									label: _("Address"),
 									name: "Address",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								}
 							]
 						},
@@ -109,7 +109,7 @@ export default class ContactsFormView extends JetView {
 									label: "Email",
 									name: "Email",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
@@ -122,7 +122,7 @@ export default class ContactsFormView extends JetView {
 									label: _("Phone"),
 									name: "Phone",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "datepicker",
@@ -130,7 +130,7 @@ export default class ContactsFormView extends JetView {
 									label: _("Birthday"),
 									name: "Birthday",
 									format: "%d %M %Y",
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									bottomPadding: 15
 								},
 								{

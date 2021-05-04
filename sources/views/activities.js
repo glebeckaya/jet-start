@@ -29,7 +29,9 @@ export default class DataView extends JetView {
 								{id: "thisweek", value: _("ThisWeek")},
 								{id: "thismonth", value: _("ThisMonth")}
 							],
-							click: () => this.filterActivities()
+							on: {
+								onChange: () => this.tableActivity.queryView({localId: tableLocalID}).filterByAll()
+							}
 						},
 						{
 							view: "button",
@@ -54,50 +56,48 @@ export default class DataView extends JetView {
 	ready() {
 		activities.filter();
 		this.tableActivity.queryView({localId: tableLocalID}).sync(activities);
-	}
 
-	filterActivities() {
-		const value = this.segmentedButton.getValue();
-		const today = new Date();
-		const month = today.getMonth();
-		const year = today.getFullYear();
-		const dayOfMonth = today.getDate();
-		const dayOfWeek = today.getDay();
-
-		this.throwOffFilters();
-		if (value === "overdue") {
-			activities.filter(obj => obj.State === "Open" && obj.date < today);
-		}
-		if (value === "completed") {
-			activities.filter(obj => obj.State === "Close");
-		}
-		if (value === "today") {
-			const endDate = new Date(year, month, dayOfMonth + 1);
-			this.setStateFilter({filter: {date: {start: today, end: endDate}}});
-		}
-		if (value === "tomorrow") {
-			const endDate = new Date(year, month, dayOfMonth + 2);
-			const startDate = new Date(year, month, dayOfMonth + 1);
-			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
-		}
-		if (value === "thisweek") {
-			const startDate = new Date(year, month, dayOfMonth - (dayOfWeek - 1));
-			const endDate = new Date(year, month, dayOfMonth + (7 - dayOfWeek));
-			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
-		}
-		if (value === "thismonth") {
-			const startDate = new Date(year, month, 1);
-			const endDate = new Date(year, month + 1, 0);
-			this.setStateFilter({filter: {date: {start: startDate, end: endDate}}});
-		}
-	}
-
-	throwOffFilters() {
-		this.tableActivity.queryView({localId: tableLocalID}).setState({filter: {}});
-		activities.filter();
-	}
-
-	setStateFilter(state) {
-		this.tableActivity.queryView({localId: tableLocalID}).setState(state);
+		this.tableActivity.queryView({localId: tableLocalID}).registerFilter(
+			this.$$("segmentedButton"),
+			{
+				columnId: "any",
+				compare: (cellValue, filterValue, obj) => {
+					const today = new Date();
+					const month = today.getMonth();
+					const year = today.getFullYear();
+					const dayOfMonth = today.getDate();
+					const dayOfWeek = today.getDay();
+					if (filterValue === "overdue") {
+						return obj.State === "Open" && obj.date < today;
+					}
+					if (filterValue === "completed") {
+						return obj.State === "Close";
+					}
+					if (filterValue === "today") {
+						const endDate = new Date(year, month, dayOfMonth + 1);
+						return obj.date > today && obj.date < endDate;
+					}
+					if (filterValue === "tomorrow") {
+						const endDate = new Date(year, month, dayOfMonth + 2);
+						const startDate = new Date(year, month, dayOfMonth + 1);
+						return obj.date > startDate && obj.date < endDate;
+					}
+					if (filterValue === "thisweek") {
+						const startDate = new Date(year, month, dayOfMonth - (dayOfWeek - 1));
+						const endDate = new Date(year, month, dayOfMonth + (7 - dayOfWeek));
+						return obj.date > startDate && obj.date < endDate;
+					}
+					if (filterValue === "thismonth") {
+						const startDate = new Date(year, month, 1);
+						const endDate = new Date(year, month + 1, 0);
+						return obj.date > startDate && obj.date < endDate;
+					}
+					return filterValue || obj;
+				}
+			},
+			{
+				getValue: segmentedButton => segmentedButton.getValue()
+			}
+		);
 	}
 }

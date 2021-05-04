@@ -1,7 +1,6 @@
 import {JetView} from "webix-jet";
 
 import showConfirmMessage from "../helpers/deleteItem";
-import SettingsPopupView from "./windows/settingsPopup";
 
 export default class SettingsTableView extends JetView {
 	constructor(app, collection, header) {
@@ -23,38 +22,43 @@ export default class SettingsTableView extends JetView {
 							value: _(`Add${this.header}`),
 							autowidth: true,
 							css: "webix_primary",
-							click: () => {
-								this.popup.showWindow({
-									title: `Add${this.header}`,
-									buttonName: "Add",
-									collection: this.collection,
-									type: this.header
-								});
-							}
+							click: () => this.addItem()
 						}
 					]
 				},
 				{
 					view: "datatable",
 					localId: "settingsTable",
+					editable: true,
 					columns: [
 						{
 							id: "Icon",
 							header: _("Icon"),
 							width: 70,
-							template: obj => `<span class="fas fa-${obj.Icon} fa-${obj.Icon}-alt"></span>`
+							template: obj => `<span class="fas fa-${obj.Icon} fa-${obj.Icon}-alt"></span>`,
+							editor: "richselect",
+							popup: {
+								view: "datasuggest",
+								body: {
+									type: {
+										height: 50,
+										width: 50
+									},
+									template: obj => `<span class="fas fa-${obj.value} fa-${obj.value}-alt"></span>`
+								}
+							},
+							options: [
+								"pencil", "flag", "comment", "clock",
+								"bell", "ban", "cogs", "plus", "phone",
+								"glass-martini", "user"
+							]
 						},
 						{
 							id: "Value",
 							header: _(this.header),
 							fillspace: true,
+							editor: "text",
 							sort: "text"
-						},
-						{
-							id: "edit",
-							header: "",
-							template: "{common.editIcon()}",
-							width: 50
 						},
 						{
 							id: "del",
@@ -63,8 +67,15 @@ export default class SettingsTableView extends JetView {
 							width: 50
 						}
 					],
-					rules: {
-						Value: webix.rules.isNotEmpty
+					on: {
+						onBeforeEditStop: (state, editor, ignore) => {
+							const check = (editor.getValue() !== "");
+							if (!ignore && !check) {
+								webix.message(_("fieldRequired"));
+								return false;
+							}
+							return true;
+						}
 					},
 					onClick: {
 						"wxi-trash": (e, id) => {
@@ -76,15 +87,6 @@ export default class SettingsTableView extends JetView {
 								cancel: _("Cancel")
 							});
 							return false;
-						},
-						"wxi-pencil": (e, id) => {
-							this.popup.showWindow({
-								Id: id,
-								title: `Edit${this.header}`,
-								buttonName: "Save",
-								collection: this.collection,
-								type: this.header
-							});
 						}
 					}
 				}
@@ -93,8 +95,16 @@ export default class SettingsTableView extends JetView {
 	}
 
 	init() {
+		this._ = this.app.getService("locale")._;
 		this.settingsTable = this.$$("settingsTable");
 		this.settingsTable.sync(this.collection);
-		this.popup = this.ui(SettingsPopupView);
+	}
+
+	addItem() {
+		this.collection.waitSave(() => {
+			this.collection.add({Value: "default", Icon: "ban"});
+		}).then(() => {
+			webix.message(this._(`${this.header}WasSaved`));
+		});
 	}
 }

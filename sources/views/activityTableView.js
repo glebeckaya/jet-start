@@ -31,7 +31,23 @@ class ActivityTableView extends JetView {
 				},
 				{
 					id: "TypeID",
-					header: [_("ActivityType"), {content: "selectFilter"}],
+					header: [_("ActivityType"), {
+						content: "richSelectFilter",
+						inputConfig: {
+							suggest: {
+								view: "datasuggest",
+								width: 500,
+								template: obj => `${obj.value || ""}`,
+								body: {
+									width: 500,
+									template: obj => `<span 
+									class="fas fa-${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Icon : "ban"} 
+									fa-${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Icon : "ban"}-alt"></span> 
+									${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Value : ""}`
+								}
+							}
+						}
+					}],
 					collection: activitytypes,
 					template: obj => `<span 
 						class="fas fa-${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Icon : "ban"} 

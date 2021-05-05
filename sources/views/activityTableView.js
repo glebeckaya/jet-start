@@ -48,7 +48,7 @@ class ActivityTableView extends JetView {
 										width: 150,
 										css: "datasuggest-customitem"
 									},
-									xCount: 1,
+									xCount: 1
 								}
 							}
 						}

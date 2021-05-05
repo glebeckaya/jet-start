@@ -40,19 +40,23 @@ class ActivityTableView extends JetView {
 								template: obj => `${obj.value || ""}`,
 								body: {
 									width: 500,
-									template: obj => `<span 
-									class="fas fa-${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Icon : "ban"} 
-									fa-${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Icon : "ban"}-alt"></span> 
-									${activitytypes.getItem(obj.id) ? activitytypes.getItem(obj.id).Value : ""}`
+									template: (obj) => {
+										const activitytype = activitytypes.getItem(obj.id);
+										const icon = activitytype ? activitytype.Icon : "ban";
+										const value = activitytype ? activitytype.Value : "";
+										return `<span class="fas fa-${icon} fa-${icon}-alt"></span> ${value}`;
+									}
 								}
 							}
 						}
 					}],
 					collection: activitytypes,
-					template: obj => `<span 
-						class="fas fa-${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Icon : "ban"} 
-						fa-${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Icon : "ban"}-alt"></span> 
-						${activitytypes.getItem(obj.TypeID) ? activitytypes.getItem(obj.TypeID).Value : "default"}`,
+					template: (obj) => {
+						const activitytype = activitytypes.getItem(obj.TypeID);
+						const icon = activitytype ? activitytype.Icon : "ban";
+						const value = activitytype ? activitytype.Value : "default";
+						return `<span class="fas fa-${icon} fa-${icon}-alt"></span> ${value}`;
+					},
 					sort: "text"
 				},
 				{

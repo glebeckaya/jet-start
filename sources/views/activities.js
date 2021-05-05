@@ -55,49 +55,58 @@ export default class DataView extends JetView {
 
 	ready() {
 		activities.filter();
-		this.tableActivity.queryView({localId: tableLocalID}).sync(activities);
-
-		this.tableActivity.queryView({localId: tableLocalID}).registerFilter(
-			this.$$("segmentedButton"),
-			{
-				columnId: "any",
-				compare: (cellValue, filterValue, obj) => {
-					const today = new Date();
-					const month = today.getMonth();
-					const year = today.getFullYear();
-					const dayOfMonth = today.getDate();
-					const dayOfWeek = today.getDay();
-					if (filterValue === "overdue") {
-						return obj.State === "Open" && obj.date < today;
+		this.tableActivityInner = this.getInnerTable();
+		if (this.tableActivityInner) {
+			this.tableActivityInner.sync(activities);
+			this.tableActivityInner.registerFilter(
+				this.$$("segmentedButton"),
+				{
+					columnId: "any",
+					compare: (cellValue, filterValue, obj) => {
+						const today = new Date();
+						const month = today.getMonth();
+						const year = today.getFullYear();
+						const dayOfMonth = today.getDate();
+						const dayOfWeek = today.getDay();
+						const todayDay = {start: today, end: new Date(year, month, dayOfMonth + 1)};
+						const tomorrow = {
+							start: new Date(year, month, dayOfMonth + 1),
+							end: new Date(year, month, dayOfMonth + 2)
+						};
+						const thisweek = {
+							start: new Date(year, month, dayOfMonth - (dayOfWeek - 1)),
+							end: new Date(year, month, dayOfMonth + (7 - dayOfWeek))
+						};
+						const thismonth = {
+							start: new Date(year, month, 1),
+							end: new Date(year, month + 1, 0)
+						};
+						switch (filterValue) {
+							case "overdue":
+								return obj.State === "Open" && obj.date < today;
+							case "completed":
+								return obj.State === "Close";
+							case "today":
+								return obj.date > todayDay.start && obj.date < todayDay.end;
+							case "tomorrow":
+								return obj.date > tomorrow.start && obj.date < tomorrow.end;
+							case "thisweek":
+								return obj.date > thisweek.start && obj.date < thisweek.end;
+							case "thismonth":
+								return obj.date > thismonth.start && obj.date < thismonth.end;
+							default:
+								return filterValue || obj;
+						}
 					}
-					if (filterValue === "completed") {
-						return obj.State === "Close";
-					}
-					if (filterValue === "today") {
-						const endDate = new Date(year, month, dayOfMonth + 1);
-						return obj.date > today && obj.date < endDate;
-					}
-					if (filterValue === "tomorrow") {
-						const endDate = new Date(year, month, dayOfMonth + 2);
-						const startDate = new Date(year, month, dayOfMonth + 1);
-						return obj.date > startDate && obj.date < endDate;
-					}
-					if (filterValue === "thisweek") {
-						const startDate = new Date(year, month, dayOfMonth - (dayOfWeek - 1));
-						const endDate = new Date(year, month, dayOfMonth + (7 - dayOfWeek));
-						return obj.date > startDate && obj.date < endDate;
-					}
-					if (filterValue === "thismonth") {
-						const startDate = new Date(year, month, 1);
-						const endDate = new Date(year, month + 1, 0);
-						return obj.date > startDate && obj.date < endDate;
-					}
-					return filterValue || obj;
+				},
+				{
+					getValue: segmentedButton => segmentedButton.getValue()
 				}
-			},
-			{
-				getValue: segmentedButton => segmentedButton.getValue()
-			}
-		);
+			);
+		}
+	}
+
+	getInnerTable() {
+		return this.tableActivity.queryView({localId: tableLocalID});
 	}
 }

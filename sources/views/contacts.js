@@ -81,6 +81,7 @@ export default class ContactsView extends JetView {
 			}
 			else this.list.select(currentId);
 		});
+		contacts.filter();
 	}
 
 	filterContacts() {

@@ -1,6 +1,7 @@
 import {JetView} from "webix-jet";
 
 import showConfirmMessage from "../helpers/deleteItem";
+import icons from "../models/icons";
 
 export default class SettingsTableView extends JetView {
 	constructor(app, collection, header) {
@@ -47,11 +48,7 @@ export default class SettingsTableView extends JetView {
 									template: obj => `<span class="fas fa-${obj.value} fa-${obj.value}-alt"></span>`
 								}
 							},
-							options: [
-								"pencil", "flag", "comment", "clock",
-								"bell", "ban", "cogs", "plus", "phone",
-								"glass-martini", "user"
-							]
+							options: icons
 						},
 						{
 							id: "Value",
@@ -102,9 +99,10 @@ export default class SettingsTableView extends JetView {
 
 	addItem() {
 		this.collection.waitSave(() => {
-			this.collection.add({Value: "default", Icon: "ban"});
-		}).then(() => {
+			this.collection.add({Value: "", Icon: "ban"});
+		}).then((res) => {
 			webix.message(this._(`${this.header}WasSaved`));
+			this.settingsTable.editCell(res.id, "Value");
 		});
 	}
 }

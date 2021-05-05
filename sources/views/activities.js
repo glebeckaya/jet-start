@@ -64,6 +64,7 @@ export default class DataView extends JetView {
 					columnId: "any",
 					compare: (cellValue, filterValue, obj) => {
 						const today = new Date();
+						today.setHours(0, 0, 0, 0, 0);
 						const month = today.getMonth();
 						const year = today.getFullYear();
 						const dayOfMonth = today.getDate();

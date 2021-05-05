@@ -55,3 +55,6 @@
     align-items: center;
     justify-content: center;
 }
+.webix_dataview_item.datasuggest-customitem {
+	justify-content: space-between;
+}

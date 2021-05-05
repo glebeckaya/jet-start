@@ -36,16 +36,19 @@ class ActivityTableView extends JetView {
 						inputConfig: {
 							suggest: {
 								view: "datasuggest",
-								width: 500,
 								template: obj => `${obj.value || ""}`,
 								body: {
-									width: 500,
 									template: (obj) => {
 										const activitytype = activitytypes.getItem(obj.id);
 										const icon = activitytype ? activitytype.Icon : "ban";
 										const value = activitytype ? activitytype.Value : "";
-										return `<span class="fas fa-${icon} fa-${icon}-alt"></span> ${value}`;
-									}
+										return `${value}<span class="fas fa-${icon} fa-${icon}-alt"></span>`;
+									},
+									type: {
+										width: 150,
+										css: "datasuggest-customitem"
+									},
+									xCount: 1,
 								}
 							}
 						}

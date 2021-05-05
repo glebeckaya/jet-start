@@ -29,8 +29,10 @@ export default class ContactsTableView extends JetView {
 							css: "webix_primary",
 							width: 200,
 							click: () => {
-								this.state = this.activitiesTable.queryView({localId: tableLocalID}).getState();
-								this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
+								if (this.tableActivityInner) {
+									this.state = this.tableActivityInner.getState();
+									this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
+								}
 							}
 						}
 					]
@@ -129,13 +131,18 @@ export default class ContactsTableView extends JetView {
 			files.waitData
 		]).then(() => {
 			this.id = parseInt(this.getParam("id", true));
-			if (contacts.exists(this.id)) {
-				this.activitiesTable.queryView({localId: tableLocalID}).setState({filter: {}});
+			this.tableActivityInner = this.getInnerTable();
+			if (this.tableActivityInner && contacts.exists(this.id)) {
+				this.tableActivityInner.setState({filter: {}});
 				activities.filter(obj => obj.ContactID === this.id);
 				files.filter(obj => obj.ContactID === this.id);
-				this.activitiesTable.queryView({localId: tableLocalID}).sync(activities);
+				this.tableActivityInner.sync(activities);
 				this.filesTable.sync(files);
 			}
 		});
+	}
+
+	getInnerTable() {
+		return this.activitiesTable.queryView({localId: tableLocalID});
 	}
 }

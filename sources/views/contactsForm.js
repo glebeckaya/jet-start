@@ -5,13 +5,15 @@ import statuses from "../models/statuses";
 
 export default class ContactsFormView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const formButtons = {
 			cols: [
 				{},
 				{
 					view: "button",
 					css: "webix_primary",
-					label: "Cancel",
+					label: _("Cancel"),
 					width: 150,
 					click: () => this.showConfirmToCancel()
 				},
@@ -36,34 +38,34 @@ export default class ContactsFormView extends JetView {
 							rows: [
 								{
 									view: "text",
-									label: "First name",
+									label: _("FirstName"),
 									name: "FirstName",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
-									label: "Last name",
+									label: _("LastName"),
 									name: "LastName",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "datepicker",
 									type: "date",
-									label: "Joining date",
+									label: _("JoiningDate"),
 									name: "StartDate",
 									format: "%d %M %Y",
 									value: new Date(),
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									bottomPadding: 15
 								},
 								{
 									view: "combo",
-									label: "Status",
+									label: _("Status"),
 									name: "StatusID",
 									bottomPadding: 15,
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									suggest: {
 										data: statuses,
 										body: {template: "#Value#"}
@@ -71,31 +73,31 @@ export default class ContactsFormView extends JetView {
 								},
 								{
 									view: "text",
-									label: "Job",
+									label: _("Job"),
 									name: "Job",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
-									label: "Company",
+									label: _("Company"),
 									name: "Company",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
-									label: "Website",
+									label: _("Website"),
 									name: "Website",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
-									label: "Address",
+									label: _("Address"),
 									name: "Address",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								}
 							]
 						},
@@ -107,7 +109,7 @@ export default class ContactsFormView extends JetView {
 									label: "Email",
 									name: "Email",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "text",
@@ -117,18 +119,18 @@ export default class ContactsFormView extends JetView {
 								},
 								{
 									view: "text",
-									label: "Phone",
+									label: _("Phone"),
 									name: "Phone",
 									bottomPadding: 15,
-									invalidMessage: "This field is required"
+									invalidMessage: _("fieldRequired")
 								},
 								{
 									view: "datepicker",
 									type: "date",
-									label: "Birthday",
+									label: _("Birthday"),
 									name: "Birthday",
 									format: "%d %M %Y",
-									invalidMessage: "This field is required",
+									invalidMessage: _("fieldRequired"),
 									bottomPadding: 15
 								},
 								{
@@ -143,7 +145,7 @@ export default class ContactsFormView extends JetView {
 												{},
 												{
 													view: "uploader",
-													value: "Change photo",
+													value: _("ChangePhoto"),
 													accept: "image/jpeg, image/png",
 													autosend: false,
 													multiple: false,
@@ -162,7 +164,7 @@ export default class ContactsFormView extends JetView {
 												{
 													view: "button",
 													css: "webix_primary",
-													label: "Delete photo",
+													label: _("DeletePhoto"),
 													click: () => this.removePhoto()
 												}
 											]
@@ -196,6 +198,7 @@ export default class ContactsFormView extends JetView {
 	}
 
 	init() {
+		this._ = this.app.getService("locale")._;
 		this.form = this.$$("ContactForm");
 		this.header = this.$$("headerForm");
 		this.buttonSave = this.$$("buttonSave");
@@ -214,14 +217,14 @@ export default class ContactsFormView extends JetView {
 	}
 
 	setLabels(label) {
-		const headerForm = `${label} contact`;
+		const headerForm = this._(`${label}Contact`);
 		this.$$("headerForm").setValues({headerForm});
-		this.$$("buttonSave").setValue(label);
+		this.$$("buttonSave").setValue(this._(label));
 	}
 
 	saveContact() {
 		if (!this.form.validate()) {
-			webix.message("Please, check all fields!");
+			webix.message(this._("checkFields"));
 			return false;
 		}
 		const values = this.form.getValues();
@@ -242,8 +245,8 @@ export default class ContactsFormView extends JetView {
 	showConfirmToCancel() {
 		webix.confirm({
 			ok: "OK",
-			cancel: "Cancel",
-			text: "Do you really want cancel this form?"
+			cancel: this._("Cancel"),
+			text: this._("CancelFormContact")
 		}).then(
 			() => this.cancelContactForm()
 		);
@@ -256,8 +259,8 @@ export default class ContactsFormView extends JetView {
 	removePhoto() {
 		webix.confirm({
 			ok: "OK",
-			cancel: "Cancel",
-			text: "Do you really want delete photo?"
+			cancel: this._("Cancel"),
+			text: `${this._("wantDelete")} ${this._("photo")}`
 		}).then(() => this.photoTemplate.parse({Photo: ""}));
 	}
 }

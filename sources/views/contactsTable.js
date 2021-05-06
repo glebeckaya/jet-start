@@ -4,11 +4,13 @@ import showConfirmMessage from "../helpers/deleteItem";
 import activities from "../models/activities";
 import contacts from "../models/contacts";
 import files from "../models/files";
-import ActivityTableView from "./activityTableView";
+import {ActivityTableView, tableLocalID} from "./activityTableView";
 import PopupView from "./windows/popup";
 
 export default class ContactsTableView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const tableActivity = {
 			cols: [new ActivityTableView(this.app, false)],
 			localId: "activities"
@@ -23,12 +25,14 @@ export default class ContactsTableView extends JetView {
 						{},
 						{
 							view: "button",
-							value: "Add activity",
+							value: _("AddActivity"),
 							css: "webix_primary",
 							width: 200,
 							click: () => {
-								this.state = this.activitiesTable.queryView({view: "datatable"}).getState();
-								this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
+								if (this.tableActivityInner) {
+									this.state = this.tableActivityInner.getState();
+									this.popup.showWindow({readonly: true, title: "Add", buttonName: "Add"});
+								}
 							}
 						}
 					]
@@ -45,27 +49,33 @@ export default class ContactsTableView extends JetView {
 					columns: [
 						{
 							id: "name",
-							header: "Name",
+							header: _("Name"),
 							fillspace: true,
 							sort: "text"
 						},
 						{
 							id: "lastModifiedDate",
-							header: "Change date",
+							header: _("ChangeDate"),
 							format: webix.Date.dateToStr("%d %M %Y"),
 							sort: "date",
 							width: 200
 						},
 						{
 							id: "sizetext",
-							header: "Size",
+							header: _("Size"),
 							sort: "text"
 						},
 						{id: "del", header: "", template: "{common.trashIcon()}", width: 50}
 					],
 					onClick: {
 						"wxi-trash": (e, id) => {
-							showConfirmMessage(this.app, id, files, "file");
+							showConfirmMessage({
+								app: this.app,
+								Id: id,
+								collection: files,
+								text: `${_("wantDelete")} ${_("file")}?`,
+								cancel: _("Cancel")
+							});
 							return false;
 						}
 					}
@@ -73,7 +83,7 @@ export default class ContactsTableView extends JetView {
 				{
 					view: "uploader",
 					autosend: false,
-					value: "Upload file",
+					value: _("UploadFile"),
 					link: files,
 					on: {
 						onBeforeFileAdd: (upload) => {
@@ -96,8 +106,8 @@ export default class ContactsTableView extends JetView {
 					localId: "tabbar",
 					multiview: true,
 					options: [
-						{value: "Activities", id: "activitiesCell"},
-						{value: "Files", id: "filesCell"}
+						{value: _("Activities"), id: "activitiesCell"},
+						{value: _("Files"), id: "filesCell"}
 					]
 				},
 				{
@@ -121,13 +131,18 @@ export default class ContactsTableView extends JetView {
 			files.waitData
 		]).then(() => {
 			this.id = parseInt(this.getParam("id", true));
-			if (contacts.exists(this.id)) {
-				this.activitiesTable.queryView({view: "datatable"}).setState({filter: {}});
+			this.tableActivityInner = this.getInnerTable();
+			if (this.tableActivityInner && contacts.exists(this.id)) {
+				this.tableActivityInner.setState({filter: {}});
 				activities.filter(obj => obj.ContactID === this.id);
 				files.filter(obj => obj.ContactID === this.id);
-				this.activitiesTable.sync(activities);
+				this.tableActivityInner.sync(activities);
 				this.filesTable.sync(files);
 			}
 		});
+	}
+
+	getInnerTable() {
+		return this.activitiesTable.queryView({localId: tableLocalID});
 	}
 }

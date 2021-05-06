@@ -7,6 +7,8 @@ import statuses from "../models/statuses";
 
 export default class ContactsInfoView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const contactsTemplate = {
 			localId: "contactsTemplate",
 			type: "clean",
@@ -17,17 +19,17 @@ export default class ContactsInfoView extends JetView {
 						<div class='photo'>
 							<img src= ${obj.Photo || "./sources/imgs/user.png"} alt="">
 						</div>
-						<p>Status: ${obj.status || ""}</p>
+						<p>${_("Status")}: ${obj.status || ""}</p>
 					</div>
 					<div>
 						<p><span class="fas fa-envelope"></span> Email: ${obj.Email || ""}</p>
 						<p><span class="fab fa-skype"></span> Skype: ${obj.Skype || ""}</p>
-						<p><span class="fas fa-clipboard-list"></span> Job: ${obj.Job || ""}</p>
-						<p><span class="fas fa-briefcase"></span> Company: ${obj.Company || ""}</p>
+						<p><span class="fas fa-clipboard-list"></span> ${_("Job")}: ${obj.Job || ""}</p>
+						<p><span class="fas fa-briefcase"></span> ${_("Company")}: ${obj.Company || ""}</p>
 					</div>
 					<div>
-						<p><span class="far fa-calendar-alt"></span> Birthday: ${obj.Birthday || ""}</p>
-						<p><span class="fas fa-street-view"></span> Location: ${obj.Address || ""}</p>
+						<p><span class="far fa-calendar-alt"></span> ${_("Birthday")}: ${obj.Birthday || ""}</p>
+						<p><span class="fas fa-street-view"></span> ${_("Location")}: ${obj.Address || ""}</p>
 					</div>
 				</div>
 			</div>`
@@ -42,7 +44,7 @@ export default class ContactsInfoView extends JetView {
 							view: "button",
 							css: "webix_primary",
 							type: "icon",
-							label: "Delete",
+							label: _("Delete"),
 							icon: "far fa-trash-alt",
 							width: 150,
 							click: () => this.removeContact(this.id)
@@ -51,7 +53,7 @@ export default class ContactsInfoView extends JetView {
 							view: "button",
 							css: "webix_primary",
 							type: "icon",
-							label: "Edit",
+							label: _("Edit"),
 							icon: "far fa-edit",
 							width: 150,
 							click: () => this.show(`contactsForm?id=${this.id}`)
@@ -79,7 +81,10 @@ export default class ContactsInfoView extends JetView {
 
 			if (contacts.exists(this.id)) {
 				const user = contacts.getItem(this.id);
-				user.status = statuses.getItem(user.StatusID).Value;
+				const status = statuses.getItem(user.StatusID);
+				const statusIcon = status ? status.Icon : "ban";
+				const statusName = status ? status.Value : "default";
+				user.status = `${statusName} <span class="fas fa-${statusIcon} fa-${statusIcon}-alt"></span>`;
 				this.$$("contactsTemplate").parse(user);
 			}
 		});

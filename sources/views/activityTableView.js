@@ -6,16 +6,20 @@ import activitytypes from "../models/activitytypes";
 import contacts from "../models/contacts";
 import PopupView from "./windows/popup";
 
-export default class ActivityTableView extends JetView {
+const tableLocalID = "tableActivity";
+
+class ActivityTableView extends JetView {
 	constructor(app, column) {
 		super(app);
 		this.contactCol = column;
 	}
 
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		return {
 			view: "datatable",
-			localId: "tableActivity",
+			localId: tableLocalID,
 			columns: [
 				{
 					id: "State",
@@ -27,14 +31,41 @@ export default class ActivityTableView extends JetView {
 				},
 				{
 					id: "TypeID",
-					header: ["Activity Type", {content: "selectFilter"}],
+					header: [_("ActivityType"), {
+						content: "richSelectFilter",
+						inputConfig: {
+							suggest: {
+								view: "datasuggest",
+								template: obj => `${obj.value || ""}`,
+								body: {
+									template: (obj) => {
+										const activitytype = activitytypes.getItem(obj.id);
+										const icon = activitytype ? activitytype.Icon : "ban";
+										const value = activitytype ? activitytype.Value : "";
+										return `${value}<span class="fas fa-${icon} fa-${icon}-alt"></span>`;
+									},
+									type: {
+										width: 150,
+										css: "datasuggest-customitem"
+									},
+									xCount: 1
+								}
+							}
+						}
+					}],
 					collection: activitytypes,
+					template: (obj) => {
+						const activitytype = activitytypes.getItem(obj.TypeID);
+						const icon = activitytype ? activitytype.Icon : "ban";
+						const value = activitytype ? activitytype.Value : "default";
+						return `<span class="fas fa-${icon} fa-${icon}-alt"></span> ${value}`;
+					},
 					sort: "text"
 				},
 				{
 					id: "date",
 					format: webix.Date.dateToStr("%d %M %Y"),
-					header: ["Due Date", {
+					header: [_("DueDate"), {
 						content: "dateRangeFilter",
 						inputConfig: {format: webix.Date.dateToStr("%d %M %Y")}
 					}],
@@ -43,13 +74,13 @@ export default class ActivityTableView extends JetView {
 				},
 				{
 					id: "Details",
-					header: ["Details", {content: "textFilter"}],
+					header: [_("Details"), {content: "textFilter"}],
 					sort: "string",
 					fillspace: true
 				},
 				{
 					id: "ContactID",
-					header: ["Contact", {content: "selectFilter"}],
+					header: [_("Contact"), {content: "selectFilter"}],
 					collection: contacts,
 					sort: "string",
 					fillspace: true
@@ -61,8 +92,14 @@ export default class ActivityTableView extends JetView {
 			select: true,
 			onClick: {
 				"wxi-trash": (e, id) => {
-					const state = this.table.getState();
-					showConfirmMessage(this.app, id, activities, "activity", state);
+					showConfirmMessage({
+						app: this.app,
+						Id: id,
+						collection: activities,
+						text: `${_("wantDelete")} ${_("activity")}?`,
+						cancel: _("Cancel"),
+						state: this.table.getState()
+					});
 					return false;
 				},
 				"wxi-pencil": (e, id) => {
@@ -73,9 +110,7 @@ export default class ActivityTableView extends JetView {
 	}
 
 	init() {
-		this.table = this.$$("tableActivity");
-		activities.filter();
-		this.table.sync(activities);
+		this.table = this.$$(tableLocalID);
 		if (!this.contactCol) this.table.hideColumn("ContactID");
 		this.popup = this.ui(PopupView);
 		this.on(this.app, "onCollectionChange", (state) => {
@@ -84,3 +119,5 @@ export default class ActivityTableView extends JetView {
 		});
 	}
 }
+
+export {ActivityTableView, tableLocalID};

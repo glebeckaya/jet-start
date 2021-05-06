@@ -1,11 +1,11 @@
-export default function showConfirmMessage(app, id, data, item, state) {
-	if (!data.getItem(id)) return;
+export default function showConfirmMessage(options) {
+	if (!options.collection.getItem(options.Id)) return;
 	webix.confirm({
 		ok: "OK",
-		cancel: "Cancel",
-		text: `Do you really want remove this ${item}?`
+		cancel: options.cancel,
+		text: options.text
 	}).then(() => {
-		data.remove(id);
-		app.callEvent("onCollectionChange", [state]);
+		options.collection.remove(options.Id);
+		options.app.callEvent("onCollectionChange", [options.state]);
 	});
 }
